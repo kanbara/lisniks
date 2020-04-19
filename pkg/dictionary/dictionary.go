@@ -12,6 +12,9 @@ import (
 
 const dictXMLName string = "pgdictionary.xml"
 
+// isZip determines if a file is reasonably a zip or not.
+// we don't really need this, because i am sure zip.OpenReader will error otherwise
+// but it can't hurt i suppose
 func isZip(fileName string) bool {
 	z, err := ioutil.ReadFile(fileName)
 	if err != nil {
@@ -19,10 +22,12 @@ func isZip(fileName string) bool {
 		return false
 	}
 
+	// these are the 3 magic numbers for different zip types
 	zipMagic := [4]byte{0x50, 0x4B, 0x03, 0x04}   // PK..
-	emptyZip := [4]byte{0x50, 0x4B, 0x05, 0x06}   // empty z
-	spannedZip := [4]byte{0x50, 0x4B, 0x07, 0x08} // spanned z
+	emptyZip := [4]byte{0x50, 0x4B, 0x05, 0x06}   // empty zip
+	spannedZip := [4]byte{0x50, 0x4B, 0x07, 0x08} // spanned zip
 
+	// get the 4 byte array to compare with the header
 	zipHdr := [4]byte{z[0], z[1], z[2], z[3]}
 
 	switch {
@@ -40,6 +45,7 @@ func isZip(fileName string) bool {
 	}
 }
 
+// Load will load the internal XML dictionary from a PolyGlot ZIP to a Dictionary struct in memory
 func Load(filename string) Dictionary {
 	ok := isZip(filename)
 	if !ok {
