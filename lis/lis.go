@@ -20,6 +20,10 @@ func main() {
 
 	dict := dictionary.Load(*dictFile)
 
+
+	// TODO there should be a root object created which handles these maps
+	p := dictionary.MakePOSMap(dict.PartsOfSpeech)
+
 	log.Infof("loaded dictionary from PolyGlot version %v, updated %v, word count %v",
 		dict.Version, dict.LastUpdated, len(dict.Lexicon))
 	log.Infof("%v - %v\n\n", dict.LanguageProperties.Name, dict.LanguageProperties.Version())
@@ -31,8 +35,8 @@ func main() {
 		loc := rand.Intn(len(dict.Lexicon))
 		word := dict.Lexicon[loc]
 
-		fmt.Printf("%v (%v), type %v #%v\n\tdef: %v\n",
-			word.Con, word.Local, word.Type, word.WordID, word.Def)
+		fmt.Printf("%v (%v) [%v] #%v\n\tdef: %v\n",
+			word.Con, word.Local, p[word.Type], word.WordID, word.Def)
 		fmt.Printf("------------------\n\n")
 	}
 }
