@@ -5,7 +5,7 @@ import (
 )
 
 type Dictionary struct {
-	Version            string                     `xml:"PolyGlotVer"`
+	Version            Rawstring                  `xml:"PolyGlotVer"`
 	LastUpdated        time.Time                  `xml:"DictSaveDate"`
 	LanguageProperties LanguageProperties         `xml:"languageProperties"`
 	WordGrammarClasses WordGrammarClassCollection `xml:"wordGrammarClassCollection"`
@@ -16,7 +16,7 @@ type Dictionary struct {
 }
 
 type LanguageProperties struct {
-	Name string `xml:"langName"`
+	Name Rawstring `xml:"langName"`
 	Copyright Rawstring `xml:"langPropAuthorCopyright"`
 }
 

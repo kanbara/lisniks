@@ -4,8 +4,8 @@ type WordType string
 
 type Word struct {
 	WordID int64 `xml:"wordId"`
-	Local string `xml:"localWord"`
-	Con string `xml:"conWord"`
+	Local Rawstring `xml:"localWord"`
+	Con Rawstring `xml:"conWord"`
 	Type WordType `xml:"wordTypeId"`
-	Def Definition `xml:"definition"`
+	Def Rawstring `xml:"definition"`
 }
