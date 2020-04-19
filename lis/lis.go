@@ -5,17 +5,15 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	"math/rand"
-	"time"
-
-	//"math/rand"
 	"github.com/c2h5oh/datasize"
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 const dictXMLName string = "pgdictionary.xml"
@@ -79,33 +77,35 @@ func main() {
 	}
 
 	log.Infof("found dictionary xml with %v bytes",
-		(datasize.ByteSize(dictFile.UncompressedSize64)*datasize.B).HumanReadable())
+		(datasize.ByteSize(dictFile.UncompressedSize64) * datasize.B).HumanReadable())
 
 	dictRC, err := dictFile.Open()
 	if err != nil {
-		log.Fatalf("could not open dictionary xml: %w", err)
+		log.Fatalf("could not open dictionary xml: %v", err)
 	}
 
 	dictBytes, err := ioutil.ReadAll(dictRC)
 	if err != nil {
-		log.Fatalf("could not read dictionary xml: %w", err)
+		log.Fatalf("could not read dictionary xml: %v", err)
 	}
 
 	dict := dictionary.Dictionary{}
 	err = xml.Unmarshal(dictBytes, &dict)
 	if err != nil {
-		log.Fatalf("could not unmarsal bytes->dict: %w", err)
+		log.Fatalf("could not unmarshal bytes->dict: %v", err)
 	}
 
 	log.Infof("loaded dictionary from PolyGlot version %v, updated %v, word count %v",
 		dict.Version, dict.LastUpdated, len(dict.Lexicon))
+	log.Infof("%v - %v", dict.LanguageProperties.Name, dict.LanguageProperties.Version())
 
 	rand.Seed(time.Now().Unix())
 
-		for i := 0; i <= 5; i++ {
-			loc := rand.Intn(len(dict.Lexicon))
-			word := dict.Lexicon[loc]
+	for i := 0; i <= 5; i++ {
+		loc := rand.Intn(len(dict.Lexicon))
+		word := dict.Lexicon[loc]
 
-		fmt.Printf("%v (%v), type %v\n\tdef: %v\n\n", word.Con, word.Local, word.Type, word.Def.Clean())
+		fmt.Printf("%v (%v), type %v\n\tdef: %v\n\n",
+			word.Con, word.Local, word.Type, word.Def)
 	}
 }

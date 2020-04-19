@@ -17,12 +17,12 @@ type Dictionary struct {
 
 type LanguageProperties struct {
 	Name string `xml:"langName"`
-	Copyright string `xml:"langPropAuthorCopyright"`
+	Copyright Rawstring `xml:"langPropAuthorCopyright"`
 }
 
 // Version gets the data from the Copyright field, as we assume that's where the version is stored
 func (l LanguageProperties) Version() string {
-	return l.Copyright
+	return l.Copyright.String()
 }
 
 type WordGrammarClassCollection struct {
