@@ -7,5 +7,6 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/c2h5oh/datasize v0.0.0-20200112174442-28bbd4740fee
 	github.com/sirupsen/logrus v1.5.0
+	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
