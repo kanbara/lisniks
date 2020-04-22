@@ -31,10 +31,4 @@ func main() {
 		fmt.Print(dict.PrettyWordStringByLoc(loc))
 		fmt.Print("------------------\n\n")
 	}
-
-	// temporary, while i i work on filtering out the extraneous classes
-	fmt.Println(dict.PrettyWordStringByID(2550))
-	fmt.Println(dict.PrettyWordStringByID(2554))
-
-
 }

@@ -15,17 +15,15 @@ func (d *Dictionary) PrettyWordStringByLoc(loc int) string {
 	return d.PrettyWord(w)
 }
 
-// TODO Also apparently we need to filter out the class that doesn't exist e.g.
-// hassa is noun which should have gender and declensino, not CLASS4
-// there should be type hints on the TypeID of the word grammar class
-// a la ApplyTypes.
-//
-// yay more map lookups
-func (d *Dictionary) HumanReadableWordClasses(classes []word.Class) string {
+func (d *Dictionary) HumanReadableWordClasses(wordType int64, classes []word.Class) string {
 	var out string
 	for _, c := range classes {
-		val := d.WordGrammar.Get(c)
-		out += fmt.Sprintf("%v\n", val.ValueName)
+		val := d.WordGrammar.Get(wordType, c)
+		if val == nil {
+			continue
+		}
+
+		out += fmt.Sprintf("%v %v\n", val.ClassName, val.ValueName)
 	}
 
 	return out
@@ -37,6 +35,6 @@ func (d *Dictionary) PrettyWord(w *word.Word) string {
 		w.Local,
 		d.PartsOfSpeech.Get(w.Type),
 		w.WordID,
-		d.HumanReadableWordClasses(w.Classes),
+		d.HumanReadableWordClasses(w.Type, w.Classes),
 		w.Def)
 }
