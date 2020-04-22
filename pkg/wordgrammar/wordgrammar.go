@@ -19,7 +19,7 @@ type ClassNode struct {
 	ID   int64  `xml:"wordGrammarClassID"`
 	Name string `xml:"wordGrammarClassName"`
 	// TODO this should be a slice
-	ApplyTypes ApplyType       `xml:"wordGrammarApplyTypes"` // part of speech this applies to
+	ApplyTypes ApplyType    `xml:"wordGrammarApplyTypes"` // part of speech this applies to
 	Values     []ClassValue `xml:"wordGrammarClassValuesCollection>wordGrammarClassValueNode"`
 }
 
@@ -37,6 +37,7 @@ type MapValue struct {
 	ClassName string
 	ValueName string
 }
+
 // Map holds all the WordClasses for O(1) lookup
 // use the Class and Value which is an entry in the list of word grammars, like gender
 // and the subkey like masculine
@@ -49,12 +50,12 @@ type MapValue struct {
 type Map map[MapKey]MapValue
 
 func (s *Service) Get(applyType int64, class word.Class) *MapValue {
-	 val, ok := s.wgMap[MapKey{class, applyType}]
-	 if !ok {
-	 	return nil
-	 }
+	val, ok := s.wgMap[MapKey{class, applyType}]
+	if !ok {
+		return nil
+	}
 
-	 return &val
+	return &val
 }
 
 func NewWordGrammarService(classes Class) *Service {

@@ -1,6 +1,7 @@
 package dictionary
 
 import (
+	"github.com/kanbara/lisniks/pkg/declension"
 	"github.com/kanbara/lisniks/pkg/lexicon"
 	"github.com/kanbara/lisniks/pkg/partsofspeech"
 	"github.com/kanbara/lisniks/pkg/strings"
@@ -16,7 +17,7 @@ type File struct {
 	PartsOfSpeech      partsofspeech.PartsOfSpeech `xml:"partsOfSpeech>class"`
 	Lexicon            lexicon.Lexicon             `xml:"lexicon>word"`
 	Etymologies        EtymologyCollection         `xml:"etymologyCollection"`
-	Declensions        DeclensionCollection        `xml:"declensionCollection"`
+	Declensions        declension.Declensions      `xml:"declensionCollection>declensionNode"`
 }
 
 type LanguageProperties struct {
@@ -30,7 +31,4 @@ func (l LanguageProperties) Version() string {
 }
 
 type EtymologyCollection struct {
-}
-
-type DeclensionCollection struct {
 }

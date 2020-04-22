@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"encoding/xml"
 	"github.com/c2h5oh/datasize"
+	"github.com/kanbara/lisniks/pkg/declension"
 	"github.com/kanbara/lisniks/pkg/lexicon"
 	"github.com/kanbara/lisniks/pkg/partsofspeech"
 	"github.com/kanbara/lisniks/pkg/wordgrammar"
@@ -21,6 +22,7 @@ type Dictionary struct {
 	PartsOfSpeech *partsofspeech.Service
 	WordGrammar   *wordgrammar.Service
 	Lexicon       *lexicon.Service
+	Declensions   *declension.Service
 }
 
 // NewDictFromFile will load the internal XML dictionary from a PolyGlot ZIP to a DictionaryFile struct in memory
@@ -32,6 +34,7 @@ func NewDictFromFile(filename string) *Dictionary {
 	d.PartsOfSpeech = partsofspeech.NewPartsOfSpeechService(dict.PartsOfSpeech)
 	d.WordGrammar = wordgrammar.NewWordGrammarService(dict.WordGrammarClasses)
 	d.Lexicon = lexicon.NewLexiconService(dict.Lexicon)
+	d.Declensions = declension.NewDeclensionService(dict.Declensions)
 
 	return &d
 }
