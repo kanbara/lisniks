@@ -2,6 +2,7 @@ package dictionary
 
 import (
 	"github.com/kanbara/lisniks/pkg/declension"
+	"github.com/kanbara/lisniks/pkg/language"
 	"github.com/kanbara/lisniks/pkg/lexicon"
 	"github.com/kanbara/lisniks/pkg/partsofspeech"
 	"github.com/kanbara/lisniks/pkg/strings"
@@ -12,22 +13,12 @@ import (
 type File struct {
 	Version            strings.Rawstring           `xml:"PolyGlotVer"`
 	LastUpdated        time.Time                   `xml:"DictSaveDate"`
-	LanguageProperties LanguageProperties          `xml:"languageProperties"`
+	LanguageProperties language.Properties         `xml:"languageProperties"`
 	WordGrammarClasses wordgrammar.Class           `xml:"wordGrammarClassCollection>wordGrammarClassNode"`
 	PartsOfSpeech      partsofspeech.PartsOfSpeech `xml:"partsOfSpeech>class"`
 	Lexicon            lexicon.Lexicon             `xml:"lexicon>word"`
 	Etymologies        EtymologyCollection         `xml:"etymologyCollection"`
 	Declensions        declension.Declensions      `xml:"declensionCollection>declensionNode"`
-}
-
-type LanguageProperties struct {
-	Name      strings.Rawstring `xml:"langName"`
-	Copyright strings.Rawstring `xml:"langPropAuthorCopyright"`
-}
-
-// Version gets the data from the Copyright field, as we assume that's where the version is stored
-func (l LanguageProperties) Version() string {
-	return l.Copyright.String()
 }
 
 type EtymologyCollection struct {

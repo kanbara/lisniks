@@ -11,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -33,7 +34,10 @@ func NewDictFromFile(filename string) *Dictionary {
 	d := Dictionary{file: &dict}
 	d.PartsOfSpeech = partsofspeech.NewPartsOfSpeechService(dict.PartsOfSpeech)
 	d.WordGrammar = wordgrammar.NewWordGrammarService(dict.WordGrammarClasses)
-	d.Lexicon = lexicon.NewLexiconService(dict.Lexicon)
+
+	d.Lexicon = lexicon.NewLexiconService(dict.Lexicon, dict.LanguageProperties.AlphaOrder)
+	sort.Sort(d.Lexicon)
+
 	d.Declensions = declension.NewDeclensionService(dict.Declensions)
 
 	return &d
