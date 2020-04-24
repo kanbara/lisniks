@@ -32,6 +32,36 @@ func (s *Service) At(index int) *word.Word {
 	return &s.lexicon[index]
 }
 
+func (s*Service) FindByConWord(str string) []*word.Word {
+	return s.findConWord(str, false)
+}
+
+func (s*Service) FindByConWordFuzzy(str string) []*word.Word {
+	return s.findConWord(str, true)
+}
+
+func (s *Service) findConWord(str string, fuzzy bool) []*word.Word {
+	// start with simple linear traversal here.
+	// think about using suffix trees or something similar later,
+	// or maybe rank queries with predecessor / successor
+	// and fuzzy search with binary search
+	var words []*word.Word
+
+	for i := range s.lexicon {
+		if fuzzy {
+			if strings.Contains(string(s.lexicon[i].Con), str) {
+				words = append(words, &s.lexicon[i])
+			}
+		} else {
+			if strings.HasPrefix(string(s.lexicon[i].Con), str) {
+				words = append(words, &s.lexicon[i])
+			}
+		}
+	}
+
+	return words
+}
+
 func (s *Service) String() string {
 	var out string
 	for _, w := range s.lexicon {

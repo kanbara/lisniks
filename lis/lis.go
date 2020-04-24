@@ -31,4 +31,17 @@ func main() {
 		fmt.Print(dict.PrettyWordStringByLoc(loc))
 		fmt.Print("------------------\n\n")
 	}
+
+	fmt.Println("Non-fuzzy find")
+	razWords := dict.Lexicon.FindByConWord("raz")
+	for _, w := range razWords {
+		fmt.Printf("%v (%v)\n", w.Con, w.Local)
+	}
+
+	fmt.Println("\nFuzzy find")
+
+	razWordsFuzz := dict.Lexicon.FindByConWordFuzzy("raz")
+	for _, w := range razWordsFuzz {
+		fmt.Printf("%v (%v)\n", w.Con, w.Local)
+	}
 }
