@@ -3,14 +3,16 @@ package ui
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
+	 "github.com/kanbara/lisniks/pkg/state"
 )
 
 type Manager struct {
 	dict *dictionary.Dictionary
+	state *state.State
 }
 
-func NewManager(dict *dictionary.Dictionary) *Manager {
-	return &Manager{dict:dict}
+func NewManager(dict *dictionary.Dictionary, state *state.State) *Manager {
+	return &Manager{dict:dict, state:state}
 }
 
 func (m *Manager) Layout(g *gocui.Gui) error {
@@ -27,6 +29,29 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 	if err != nil {
 		return nil
 	}
+
+	err = m.NewPartOfSpeechView(g)
+	if err != nil {
+		return nil
+	}
+
+	err = m.NewWordGrammarView(g)
+	if err != nil {
+		return nil
+	}
+
+	err = m.NewDefinitionView(g)
+	if err != nil {
+		return nil
+	}
+
+	g.Highlight = true
+	g.SelFgColor = gocui.ColorGreen
+	_, err = g.SetCurrentView(lexView)
+	if err != nil {
+		return nil
+	}
+
 
 	return nil
 }
