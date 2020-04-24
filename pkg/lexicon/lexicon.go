@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/kanbara/lisniks/pkg/language"
 	"github.com/kanbara/lisniks/pkg/word"
+	log "github.com/sirupsen/logrus"
 	"strings"
+	"time"
 )
 
 type Lexicon []word.Word
@@ -22,6 +24,10 @@ func (s *Service) GetByID(id int64) *word.Word {
 	}
 
 	return nil
+}
+
+func (s *Service) Words() []word.Word {
+	return s.lexicon
 }
 
 func (s *Service) Count() int {
@@ -52,6 +58,8 @@ func (s *Service) findConWord(str string, fuzzy bool) []*word.Word {
 	// and fuzzy search with binary search
 	var words []*word.Word
 
+	n := time.Now()
+
 	for i := range s.lexicon {
 		if fuzzy {
 			if strings.Contains(string(s.lexicon[i].Con), str) {
@@ -63,6 +71,8 @@ func (s *Service) findConWord(str string, fuzzy bool) []*word.Word {
 			}
 		}
 	}
+
+	log.Infof("total time for search: %v", time.Now().Sub(n))
 
 	return words
 }

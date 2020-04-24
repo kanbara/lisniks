@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"github.com/jroimartin/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
-	log "github.com/sirupsen/logrus"
+	"github.com/kanbara/lisniks/pkg/ui"
 	"gopkg.in/alecthomas/kingpin.v2"
-	"math/rand"
+	"log"
 	"os"
-	"time"
 )
 
 var (
@@ -19,29 +18,23 @@ func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
 	dict := dictionary.NewDictFromFile(*dictFile)
-
-	log.Info(dict.Stats())
-	log.Info(dict.LangAndVersion())
-	// simply print out a few random words to see that our dictionary reading works as intended
-	rand.Seed(time.Now().Unix())
-
-	for i := 0; i <= 5; i++ {
-		loc := rand.Intn(dict.Lexicon.Count())
-
-		fmt.Print(dict.PrettyWordStringByLoc(loc))
-		fmt.Print("------------------\n\n")
+	g, err := gocui.NewGui(gocui.Output256)
+	if err != nil {
+		log.Panicf("could not instantiate UI: %v", err)
 	}
 
-	fmt.Println("Non-fuzzy find")
-	razWords := dict.Lexicon.FindByConWord("raz")
-	for _, w := range razWords {
-		fmt.Printf("%v (%v)\n", w.Con, w.Local)
+	defer g.Close()
+
+	g.SetManager(ui.NewManager(dict))
+	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quitfn); err != nil {
+		log.Panicf("Could not handle keybinding: %v", err)
 	}
 
-	fmt.Println("\nFuzzy find")
-
-	razWordsFuzz := dict.Lexicon.FindByConWordFuzzy("raz")
-	for _, w := range razWordsFuzz {
-		fmt.Printf("%v (%v)\n", w.Con, w.Local)
+	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
+		log.Panicf("MainLoop() errored: %v", err)
 	}
+}
+
+func quitfn(_ *gocui.Gui, _ *gocui.View) error {
+	return gocui.ErrQuit
 }
