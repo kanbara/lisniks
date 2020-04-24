@@ -1,7 +1,7 @@
 package ui
 
 import (
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	 "github.com/kanbara/lisniks/pkg/state"
 )
@@ -45,8 +45,10 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 		return nil
 	}
 
+	// TODO this changes to a function when we can switch views
 	g.Highlight = true
-	g.SelFgColor = gocui.ColorGreen
+	g.SelFgColor = gocui.ColorGreen | gocui.AttrBold
+	g.SelFrameColor = gocui.ColorGreen
 	_, err = g.SetCurrentView(lexView)
 	if err != nil {
 		return nil

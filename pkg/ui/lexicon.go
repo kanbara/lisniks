@@ -2,13 +2,13 @@ package ui
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 )
 
 func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 	_, maxY := g.Size()
-	if v, err := g.SetView(lexView, 0, 3, 20, maxY-1); err != nil {
-		if err != gocui.ErrUnknownView {
+	if v, err := g.SetView(lexView, 0, 3, 20, maxY-1, 0); err != nil {
+		if !gocui.IsUnknownView(err) {
 			return err
 		}
 

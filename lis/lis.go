@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
@@ -23,7 +23,7 @@ func main() {
 		Words: dict.Lexicon.Words(),
 	}
 
-	g, err := gocui.NewGui(gocui.Output256)
+	g, err := gocui.NewGui(gocui.Output256, false)
 	if err != nil {
 		log.Panicf("could not instantiate UI: %v", err)
 	}

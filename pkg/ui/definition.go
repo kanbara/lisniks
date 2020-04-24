@@ -2,15 +2,15 @@ package ui
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 )
 
 func (m *Manager) NewDefinitionView(g* gocui.Gui) error {
 
 	maxX, maxY := g.Size()
 
-	if v, err := g.SetView(defnView, 21, 11, maxX-1, maxY-1); err != nil {
-		if err != gocui.ErrUnknownView {
+	if v, err := g.SetView(defnView, 21, 11, maxX-1, maxY-1, 0); err != nil {
+		if !gocui.IsUnknownView(err) {
 			return err
 		}
 

@@ -2,7 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 )
 
 func (m *Manager) NewHeaderView(g* gocui.Gui) error {
@@ -11,8 +11,8 @@ func (m *Manager) NewHeaderView(g* gocui.Gui) error {
 	stringlen := len(stats)
 
 	// TODO move positions where possible into views.go maybe
-	if v, err := g.SetView(langView, 0, 0, stringlen+1, 5); err != nil {
-		if err != gocui.ErrUnknownView {
+	if v, err := g.SetView(langView, 0, 0, stringlen+1, 5, 0); err != nil {
+		if !gocui.IsUnknownView(err) {
 			return err
 		}
 

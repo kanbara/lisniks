@@ -2,15 +2,15 @@ package ui
 
 import (
 	"fmt"
-	"github.com/jroimartin/gocui"
+	"github.com/awesome-gocui/gocui"
 )
 
 func (m *Manager) NewWordGrammarView(g* gocui.Gui) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(wordGrammarView, 21, 3, maxX-1, 7); err != nil {
-		if err != gocui.ErrUnknownView {
+	if v, err := g.SetView(wordGrammarView, 21, 3, maxX-1, 7, 0); err != nil {
+		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
