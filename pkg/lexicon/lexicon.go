@@ -40,6 +40,11 @@ func (s*Service) FindByConWordFuzzy(str string) []*word.Word {
 	return s.findConWord(str, true)
 }
 
+// TODO i have the idea that we should be able to chain search filters together
+// like findByConWord(str).ByPartOfSpeech("verb").ByDefinitionContaining("foobar")
+// which means we should have an output type that instead of returning []*word.Word
+// should be another type like `Filtered` which is still just a []*word.Word
+// and then all the searches are func (f *Filtered) ByFoo() *Filtered
 func (s *Service) findConWord(str string, fuzzy bool) []*word.Word {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
