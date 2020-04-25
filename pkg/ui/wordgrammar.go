@@ -9,7 +9,7 @@ func (m *Manager) NewWordGrammarView(g* gocui.Gui) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(wordGrammarView, 21, 3, maxX-1, 7, 0); err != nil {
+	if v, err := g.SetView(wordGrammarView, 21, 6, maxX-1, 10, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

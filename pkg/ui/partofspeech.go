@@ -9,7 +9,7 @@ func (m *Manager) NewPartOfSpeechView(g* gocui.Gui) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(posView, 21, 8, maxX-1, 10, 0); err != nil {
+	if v, err := g.SetView(posView, 21, 11, maxX-1, 13, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

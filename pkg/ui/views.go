@@ -5,6 +5,7 @@ const (
 	lexView = "lexicon"
 	posView = "part of speech"
 	wordGrammarView = "word classes"
+	localWordView = "local word"
 	defnView = "definition"
 )
 

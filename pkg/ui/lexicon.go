@@ -15,8 +15,8 @@ func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 		v.Title = "lexicon"
 		v.Frame = true
 		v.Highlight = true
-		v.SelBgColor = gocui.ColorMagenta
-		v.SelFgColor = gocui.ColorBlack
+		v.SelFgColor = gocui.ColorGreen
+		v.FgColor = gocui.ColorWhite
 
 		for _, w  := range m.state.Words {
 			_, err := fmt.Fprintln(v, w.Con)
@@ -34,6 +34,11 @@ func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 		if err != nil {
 			return err
 		}
+
+		err = v.SetHighlight(m.state.SelectedWord, true)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -41,20 +46,57 @@ func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 
 func (m *Manager) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
 	// doesn't scroll or wrap
+
 	x, y := v.Cursor()
+	//if y+updown < 0 {
+	//	return nil
+	//}
+	//
+	//_, sizeY := v.Size()
+	//if y+updown >= sizeY {
+	//	//v.SetOrigin(x)
+	//	return nil
+	//}
+
 	err :=v.SetCursor(x, y+updown)
 	if err != nil {
 		return err
 	}
 
+	// turn off highlight for previous words
+	err = v.SetHighlight(m.state.SelectedWord, false)
+	if err != nil {
+		return err
+	}
+
 	m.state.SelectedWord = m.state.SelectedWord + updown
+
+	// highlight current word
+	err = v.SetHighlight(m.state.SelectedWord, true)
+	if err != nil {
+		return err
+	}
+
 	g.Update(func(g *gocui.Gui) error {
+		// TODO loop thru the views
+		// also make View have an Update function so we can use it with interface
+		// and then call update... oy vey
 		v, err := g.View(posView)
 		if err != nil {
 			return err
 		}
 
 		err = m.UpdatePartOfSpeech(v)
+		if err != nil {
+			return err
+		}
+
+		v, err = g.View(localWordView)
+		if err != nil {
+			return err
+		}
+
+		err = m.UpdateLocalWordView(v)
 		if err != nil {
 			return err
 		}

@@ -30,6 +30,11 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 		return nil
 	}
 
+	err = m.NewLocalWordView(g)
+	if err != nil {
+		return nil
+	}
+
 	err = m.NewPartOfSpeechView(g)
 	if err != nil {
 		return nil
@@ -47,7 +52,7 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 
 	// TODO this changes to a function when we can switch views
 	g.Highlight = true
-	g.SelFgColor = gocui.ColorGreen | gocui.AttrBold
+	g.SelFgColor = gocui.ColorGreen
 	g.SelFrameColor = gocui.ColorGreen
 	_, err = g.SetCurrentView(lexView)
 	if err != nil {

@@ -9,7 +9,7 @@ func (m *Manager) NewDefinitionView(g* gocui.Gui) error {
 
 	maxX, maxY := g.Size()
 
-	if v, err := g.SetView(defnView, 21, 11, maxX-1, maxY-1, 0); err != nil {
+	if v, err := g.SetView(defnView, 21, 14, maxX-1, maxY-1, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
