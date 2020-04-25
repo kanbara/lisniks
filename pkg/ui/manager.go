@@ -30,6 +30,11 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 		return nil
 	}
 
+	err = m.NewCurrentWordView(g)
+	if err != nil {
+		return nil
+	}
+
 	err = m.NewLocalWordView(g)
 	if err != nil {
 		return nil

@@ -7,6 +7,7 @@ const (
 	wordGrammarView = "word classes"
 	localWordView = "local word"
 	defnView = "definition"
+	currentWordView = "current word"
 )
 
 //func (m *Manager) NextView(g *gocui.Gui, v *gocui.View) error {

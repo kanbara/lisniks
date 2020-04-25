@@ -7,11 +7,17 @@ import (
 
 func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 	_, maxY := g.Size()
-	if v, err := g.SetView(lexView, 0, 3, 20, maxY-1, 0); err != nil {
+	if v, err := g.SetView(lexView, 0, 6, 20, maxY-1, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
+		// TODO i wanted to set the title to the current word
+		// but unfortunately it didn't work because it printed
+		// sth. like -jeř-a because of the two byte width unicode
+		//
+		// i saw an issue on the thing about unicode, maybe there's a fix
+		// that can be done.
 		v.Title = "lexicon"
 		v.Frame = true
 		v.Highlight = true
@@ -87,6 +93,16 @@ func (m *Manager) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
 		}
 
 		err = m.UpdatePartOfSpeech(v)
+		if err != nil {
+			return err
+		}
+
+		v, err = g.View(currentWordView)
+		if err != nil {
+			return err
+		}
+
+		err = m.updateCurrentWordView(v)
 		if err != nil {
 			return err
 		}
