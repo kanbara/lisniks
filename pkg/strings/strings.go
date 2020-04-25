@@ -39,9 +39,19 @@ func (r Rawstring) String() string {
 	// call the recursive body function which crawls the html, also assume no error
 	body, _ := body(doc)
 
-	// body.Data is just the tag, the contents are inside its child
+	// body.Data is just the tag, the contents are inside its children
+	var s string
+	for child := body.FirstChild; child != nil; child = child.NextSibling {
+		// if we have <br>, put a newline
+		if child.Data == "br" {
+			s += "\n"
+			continue
+		}
+
+		s += child.Data
+	}
 	// i've noticed some html bits end with extra \n\n's, let's get rid of those too
-	return strings.TrimSpace(body.FirstChild.Data)
+	return strings.TrimSpace(s)
 }
 
 // a function which iterates recursively over the HTML nodes

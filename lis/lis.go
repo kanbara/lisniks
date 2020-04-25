@@ -6,7 +6,7 @@ import (
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
 	"gopkg.in/alecthomas/kingpin.v2"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
 )
 
