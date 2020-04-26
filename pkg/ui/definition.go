@@ -39,5 +39,3 @@ func (d *DefinitionView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (d *DefinitionView) SetKeyBindings(_ *gocui.Gui) error { return nil}
