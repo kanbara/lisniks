@@ -11,12 +11,17 @@ func (w *WordGrammarView) New(g *gocui.Gui, name string) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(name, 21, 6, maxX-1, 10, 0); err != nil {
+	if v, err := g.SetView(name, 21, 6, maxX-1, 9, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = name
+		v.Frame = true
+
+		if _, err := g.SetViewOnBottom(name); err != nil {
+			return err
+		}
+
 		err := w.Update(v)
 		if err != nil {
 			return err

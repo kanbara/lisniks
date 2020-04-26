@@ -11,12 +11,12 @@ func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(name, 21, 11, maxX-1, 13, 0); err != nil {
+	if v, err := g.SetView(name, 21, 7, maxX-1, 9, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = name
+		v.Frame = false
 		v.FgColor = colour(int(p.state.CurrentWord().Type))
 		err := p.Update(v)
 		if err != nil {

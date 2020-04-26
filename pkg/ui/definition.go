@@ -11,7 +11,7 @@ func (d *DefinitionView) New(g *gocui.Gui, name string) error {
 
 	maxX, maxY := g.Size()
 
-	if v, err := g.SetView(name, 21, 14, maxX-1, maxY-4, 0); err != nil {
+	if v, err := g.SetView(name, 21, 10, maxX-1, maxY-4, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
