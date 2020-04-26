@@ -23,7 +23,7 @@ func (d *Dictionary) HumanReadableWordClasses(wordType int64, classes []word.Cla
 			continue
 		}
 
-		out += fmt.Sprintf("%v %v\n", val.ClassName, val.ValueName)
+		out += fmt.Sprintf("%v\n", val.ValueName)
 	}
 
 	return out
