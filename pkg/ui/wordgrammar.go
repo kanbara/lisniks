@@ -5,17 +5,19 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) NewWordGrammarView(g* gocui.Gui) error {
+type WordGrammarView DefaultView
+
+func (w *WordGrammarView) New(g *gocui.Gui, name string) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(wordGrammarView, 21, 6, maxX-1, 10, 0); err != nil {
+	if v, err := g.SetView(name, 21, 6, maxX-1, 10, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = wordGrammarView
-		err := m.UpdateWordGrammarView(v)
+		v.Title = name
+		err := w.Update(v)
 		if err != nil {
 			return err
 		}
@@ -24,13 +26,13 @@ func (m *Manager) NewWordGrammarView(g* gocui.Gui) error {
 	return nil
 }
 
-func (m *Manager) UpdateWordGrammarView(v *gocui.View) error {
+func (w *WordGrammarView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if m.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, m.dict.HumanReadableWordClasses(
-			m.state.CurrentWord().Type,
-			m.state.CurrentWord().Classes))
+	if w.state.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, w.dict.HumanReadableWordClasses(
+			w.state.CurrentWord().Type,
+			w.state.CurrentWord().Classes))
 		if err != nil {
 			return err
 		}
@@ -38,3 +40,5 @@ func (m *Manager) UpdateWordGrammarView(v *gocui.View) error {
 
 	return nil
 }
+
+func (w *WordGrammarView) SetKeyBindings(_ *gocui.Gui) error { return nil }

@@ -5,13 +5,15 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) NewHeaderView(g* gocui.Gui) error {
-	stats := m.dict.Stats()
-	langAndVersion := m.dict.LangAndVersion()
+type HeaderView DefaultView
+
+func (h *HeaderView) New(g *gocui.Gui, name string) error {
+	stats := h.dict.Stats()
+	langAndVersion := h.dict.LangAndVersion()
 	stringlen := len(stats)
 
 	// TODO move positions where possible into views.go maybe
-	if v, err := g.SetView(langView, 0, 0, stringlen+1, 5, 0); err != nil {
+	if v, err := g.SetView(name, 0, 0, stringlen+1, 5, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
@@ -28,3 +30,6 @@ func (m *Manager) NewHeaderView(g* gocui.Gui) error {
 
 	return nil
 }
+
+func (h *HeaderView) Update(_ *gocui.View) error { return nil }
+func (h *HeaderView) SetKeyBindings(_ *gocui.Gui) error { return nil }

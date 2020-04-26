@@ -22,6 +22,7 @@ func main() {
 	dict := dictionary.NewDictFromFile(*dictFile)
 	s := state.State{
 		Words: dict.Lexicon.Words(),
+		SelectedWord: 0,
 	}
 
 	g, err := gocui.NewGui(gocui.Output256, false)

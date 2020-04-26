@@ -1,7 +1,9 @@
 package ui
 
+import "github.com/awesome-gocui/gocui"
+
 const (
-	langView = "lang"
+	headerView = "lang"
 	lexView = "lexicon"
 	posView = "part of speech"
 	wordGrammarView = "word classes"
@@ -10,6 +12,17 @@ const (
 	currentWordView = "current word"
 	searchView = "search"
 )
+
+type View interface {
+	SetKeybindings(g *gocui.Gui) error
+	New(g *gocui.Gui, name string) error
+	Update(v *gocui.View) error
+}
+
+type DefaultView struct {
+	*Manager
+	viewsToUpdate []string
+}
 
 //func (m *Manager) NextView(g *gocui.Gui, v *gocui.View) error {
 //	a.viewIndex = (a.viewIndex + 1) % len(VIEWS)

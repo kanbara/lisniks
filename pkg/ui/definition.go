@@ -5,18 +5,20 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) NewDefinitionView(g* gocui.Gui) error {
+type DefinitionView DefaultView
+
+func (d *DefinitionView) New(g *gocui.Gui, name string) error {
 
 	maxX, maxY := g.Size()
 
-	if v, err := g.SetView(defnView, 21, 14, maxX-1, maxY-4, 0); err != nil {
+	if v, err := g.SetView(name, 21, 14, maxX-1, maxY-4, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = defnView
+		v.Title = name
 		v.Wrap = true
-		err := m.UpdateDefinition(v)
+		err := d.Update(v)
 		if err != nil {
 			return err
 		}
@@ -25,11 +27,11 @@ func (m *Manager) NewDefinitionView(g* gocui.Gui) error {
 	return nil
 }
 
-func (m *Manager) UpdateDefinition(v *gocui.View) error {
+func (d *DefinitionView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if m.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, m.state.CurrentWord().Def)
+	if d.state.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, d.state.CurrentWord().Def)
 		if err != nil {
 			return err
 		}
@@ -37,3 +39,6 @@ func (m *Manager) UpdateDefinition(v *gocui.View) error {
 
 	return nil
 }
+
+func (d *DefinitionView) SetKeyBindings(_ *gocui.Gui) error { return nil}
+func (d *DefinitionView) SetViewsToUpdate(_ []View) {}

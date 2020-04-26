@@ -5,8 +5,10 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) NewCurrentWordView(g *gocui.Gui) error {
-	if v, err := g.SetView(currentWordView, 0, 3, 20, 5, 0); err != nil {
+type CurrentWordView DefaultView
+
+func (c *CurrentWordView) New(g *gocui.Gui, name string) error {
+	if v, err := g.SetView(name, 0, 3, 20, 5, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
@@ -14,7 +16,7 @@ func (m *Manager) NewCurrentWordView(g *gocui.Gui) error {
 		v.Frame = true
 		v.FgColor = gocui.ColorGreen
 
-		err := m.updateCurrentWordView(v)
+		err := c.Update(v)
 		if err != nil {
 			return err
 		}
@@ -23,12 +25,12 @@ func (m *Manager) NewCurrentWordView(g *gocui.Gui) error {
 	return nil
 }
 
-func (m *Manager) updateCurrentWordView(v *gocui.View) error {
+func (c *CurrentWordView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if m.state.CurrentWord() != nil {
+	if c.state.CurrentWord() != nil {
 		v.FgColor = gocui.ColorGreen
-		_, err := fmt.Fprintln(v, m.state.CurrentWord().Con)
+		_, err := fmt.Fprintln(v, c.state.CurrentWord().Con)
 		if err != nil {
 			return err
 		}
@@ -42,3 +44,5 @@ func (m *Manager) updateCurrentWordView(v *gocui.View) error {
 
 	return nil
 }
+
+func (c *CurrentWordView) SetKeyBindings(_ *gocui.Gui) error { return nil }
