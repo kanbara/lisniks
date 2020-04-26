@@ -5,7 +5,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type DefinitionView DefaultView
+type DefinitionView NoBindingsView
 
 func (d *DefinitionView) New(g *gocui.Gui, name string) error {
 
@@ -39,5 +39,3 @@ func (d *DefinitionView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (d *DefinitionView) SetKeybindings(_ *gocui.Gui) error { return nil }

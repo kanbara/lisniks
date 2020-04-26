@@ -3,14 +3,14 @@ package ui
 import "github.com/awesome-gocui/gocui"
 
 const (
-	headerView = "lang"
-	lexView = "lexicon"
-	posView = "part of speech"
+	headerView      = "lang"
+	lexView         = "lexicon"
+	posView         = "part of speech"
 	wordGrammarView = "word classes"
-	localWordView = "local word"
-	defnView = "definition"
+	localWordView   = "local word"
+	defnView        = "definition"
 	currentWordView = "current word"
-	searchView = "search"
+	searchView      = "search"
 )
 
 type View interface {
@@ -23,6 +23,28 @@ type DefaultView struct {
 	*Manager
 	viewsToUpdate []string
 }
+
+type NoBindingsOrUpdatesView struct {
+	*Manager
+	*NilBindingsAndUpdates
+}
+
+type NoBindingsView struct {
+	*Manager
+	*NilBindings
+}
+
+// convenience structs we can compose instead of having to copy and paste everywhere
+// annoying that we have to pass the instance of the struct, but i find it preferable
+// to having the functions written everywhere
+type NilBindingsAndUpdates struct{}
+
+func (n *NilBindingsAndUpdates) Update(_ *gocui.View) error        { return nil }
+func (n *NilBindingsAndUpdates) SetKeybindings(_ *gocui.Gui) error { return nil }
+
+type NilBindings struct{}
+
+func (n *NilBindings) SetKeybindings(_ *gocui.Gui) error { return nil }
 
 func toSearchView(g *gocui.Gui, _ *gocui.View) error {
 	g.Cursor = true

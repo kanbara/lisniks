@@ -18,17 +18,21 @@ func NewManager(dict *dictionary.Dictionary, state *state.State) *Manager {
 
 func (m *Manager) Layout(g *gocui.Gui) error {
 	if m.views == nil {
+
+		nbu := &NilBindingsAndUpdates{}
+		nb := &NilBindings{}
+
 		m.views = map[string]View{
-			headerView: &HeaderView{m, nil},
+			headerView: &HeaderView{m, nbu},
 			searchView: &SearchView{m, []string{
 				posView, lexView, currentWordView, localWordView, wordGrammarView, defnView}},
 			lexView: &LexiconView{m, []string{
 				posView, currentWordView, localWordView, wordGrammarView, defnView}},
-			currentWordView: &CurrentWordView{m, nil},
-			localWordView:   &LocalWordView{m, nil},
-			posView:         &PartOfSpeechView{m, nil},
-			wordGrammarView: &WordGrammarView{m, nil},
-			defnView:        &DefinitionView{m, nil},
+			currentWordView: &CurrentWordView{m, nb},
+			localWordView:   &LocalWordView{m, nb},
+			posView:         &PartOfSpeechView{m, nb},
+			wordGrammarView: &WordGrammarView{m, nb},
+			defnView:        &DefinitionView{m, nb},
 		}
 
 		for name, view := range m.views {

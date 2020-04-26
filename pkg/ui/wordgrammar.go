@@ -5,7 +5,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type WordGrammarView DefaultView
+type WordGrammarView NoBindingsView
 
 func (w *WordGrammarView) New(g *gocui.Gui, name string) error {
 
@@ -40,5 +40,3 @@ func (w *WordGrammarView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (w *WordGrammarView) SetKeybindings(_ *gocui.Gui) error { return nil }

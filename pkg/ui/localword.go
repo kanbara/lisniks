@@ -5,7 +5,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type LocalWordView DefaultView
+type LocalWordView NoBindingsView
 
 func (l *LocalWordView) New(g *gocui.Gui, name string) error {
 
@@ -39,5 +39,3 @@ func (l *LocalWordView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (l *LocalWordView) SetKeybindings(_ *gocui.Gui) error { return nil }

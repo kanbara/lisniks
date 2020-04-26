@@ -5,7 +5,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type PartOfSpeechView DefaultView
+type PartOfSpeechView NoBindingsView
 
 func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
 
@@ -41,5 +41,3 @@ func (p *PartOfSpeechView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (p *PartOfSpeechView) SetKeybindings(_ *gocui.Gui) error { return nil }

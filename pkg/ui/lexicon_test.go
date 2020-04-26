@@ -17,9 +17,9 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 	}
 
 	tests := []struct {
-		name  string
-		args  args
-		want  coords
+		name     string
+		args     args
+		want     coords
 		selected int
 	}{
 		{
@@ -87,12 +87,12 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 			args: args{
 				c: coords{
 					cursorPos:   coordinates{y: 43},
-					originStart: coordinates{y: 0}, // +++++
+					originStart: coordinates{y: 0},  // +++++
 					viewSize:    coordinates{y: 52}, // -----
 				},
 				updown:   22, // *
 				selected: 43, // <
-				minY:     0, // @
+				minY:     0,  // @
 				maxY:     43, // $
 			},
 			want: coords{
@@ -119,9 +119,9 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 					viewSize:    coordinates{y: 4}, // -----
 				},
 				updown:   -1, // *
-				selected: 1, // <
-				minY:     0, // @
-				maxY:     5, // $
+				selected: 1,  // <
+				minY:     0,  // @
+				maxY:     5,  // $
 			},
 			want: coords{
 				cursorPos:   coordinates{y: 0},
@@ -147,9 +147,9 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 					viewSize:    coordinates{y: 4}, // -----
 				},
 				updown:   -3, // *
-				selected: 2, // <
-				minY:     0, // @
-				maxY:     5, // $
+				selected: 2,  // <
+				minY:     0,  // @
+				maxY:     5,  // $
 			},
 			want: coords{
 				cursorPos:   coordinates{y: 0},
@@ -204,9 +204,9 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 					viewSize:    coordinates{y: 4}, // -----
 				},
 				updown:   -1, // *
-				selected: 2, // <
-				minY:     0, // @
-				maxY:     5, // $
+				selected: 2,  // <
+				minY:     0,  // @
+				maxY:     5,  // $
 			},
 			want: coords{
 				cursorPos:   coordinates{y: 1},
@@ -324,9 +324,9 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 					viewSize:    coordinates{y: 4}, // -----
 				},
 				updown:   -1, // *
-				selected: 1, // <
-				minY:     0, // @
-				maxY:     5, // $
+				selected: 1,  // <
+				minY:     0,  // @
+				maxY:     5,  // $
 			},
 			want: coords{
 				cursorPos:   coordinates{y: 0},
@@ -353,9 +353,9 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 					viewSize:    coordinates{y: 4}, // -----
 				},
 				updown:   -1, // *
-				selected: 0, // <
-				minY:     0, // @
-				maxY:     5, // $
+				selected: 0,  // <
+				minY:     0,  // @
+				maxY:     5,  // $
 			},
 			want: coords{
 				cursorPos:   coordinates{y: 0},
@@ -425,34 +425,34 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 			selected: 5,
 		},
 		{
-		// before a * @  | after
-		// ------ ++++++ | ----- +++++
-		// 1 0    b 	 | 0 <	 a * @
-		// 2  	  c	 	 | 1	 b
-		// 3 	  d	     | 2 	 c
-		// 4 < 	  e	     | 3	 d
-		// ------ ++++++ | ----- +++++
-		// 5 	  f $    | 4	 e
-		//   	   		 | 5	 f   $
-		name: "test scrolling up at the end doesn't go past 0 either",
-		args: args{
-			c: coords{
-				// disregard all x coords (for now?)
-				cursorPos:   coordinates{y: 1},
-				originStart: coordinates{y: 1}, // +++++
-				viewSize:    coordinates{y: 4}, // -----
+			// before a * @  | after
+			// ------ ++++++ | ----- +++++
+			// 1 0    b 	 | 0 <	 a * @
+			// 2  	  c	 	 | 1	 b
+			// 3 	  d	     | 2 	 c
+			// 4 < 	  e	     | 3	 d
+			// ------ ++++++ | ----- +++++
+			// 5 	  f $    | 4	 e
+			//   	   		 | 5	 f   $
+			name: "test scrolling up at the end doesn't go past 0 either",
+			args: args{
+				c: coords{
+					// disregard all x coords (for now?)
+					cursorPos:   coordinates{y: 1},
+					originStart: coordinates{y: 1}, // +++++
+					viewSize:    coordinates{y: 4}, // -----
+				},
+				updown:   -7, // *
+				selected: 4,  // <
+				minY:     0,  // @
+				maxY:     5,  // $
 			},
-			updown:   -7, // *
-			selected: 4, // <
-			minY:     0, // @
-			maxY:     5, // $
+			want: coords{
+				cursorPos:   coordinates{y: 0},
+				originStart: coordinates{y: 0},
+			},
+			selected: 0,
 		},
-		want: coords{
-			cursorPos:   coordinates{y: 0},
-			originStart: coordinates{y: 0},
-		},
-		selected: 0,
-	},
 	}
 
 	for _, tt := range tests {
@@ -461,10 +461,10 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 			log.SetLevel(log.DebugLevel)
 			got, got1 := calculateNewViewAndState(tt.args.c, tt.args.updown, tt.args.selected, tt.args.minY, tt.args.maxY)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("calculateNewViewAndState()\n" +
-					" got =  cursor(%v) origin(%v)\n" +
+				t.Errorf("calculateNewViewAndState()\n"+
+					" got =  cursor(%v) origin(%v)\n"+
 					" want = cursor(%v) origin(%v)\n",
-					 got.cursorPos.y, got.originStart.y,
+					got.cursorPos.y, got.originStart.y,
 					tt.want.cursorPos.y, tt.want.originStart.y)
 			}
 

@@ -5,7 +5,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type CurrentWordView DefaultView
+type CurrentWordView NoBindingsView
 
 func (c *CurrentWordView) New(g *gocui.Gui, name string) error {
 	if v, err := g.SetView(name, 0, 3, 20, 5, 0); err != nil {
@@ -44,5 +44,3 @@ func (c *CurrentWordView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (c *CurrentWordView) SetKeybindings(_ *gocui.Gui) error { return nil }

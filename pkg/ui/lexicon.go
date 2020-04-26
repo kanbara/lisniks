@@ -31,7 +31,7 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 		v.SelFgColor = gocui.ColorGreen
 		v.FgColor = gocui.ColorWhite
 
-		for _, w  := range l.state.Words {
+		for _, w := range l.state.Words {
 			_, err := fmt.Fprintln(v, w.Con)
 			if err != nil {
 				return err
@@ -113,7 +113,7 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 	cx, cy := v.Cursor()
 
 	// we can't go above len words
-	maxY := len(l.state.Words)-1
+	maxY := len(l.state.Words) - 1
 
 	// the position of the buffer in the viewSize
 	ox, oy := v.Origin()
@@ -145,7 +145,7 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 	}
 
 	c, sel := calculateNewViewAndState(coords{
-		cursorPos:   coordinates{cx,cy},
+		cursorPos:   coordinates{cx, cy},
 		originStart: coordinates{ox, oy},
 		viewSize:    coordinates{vx, vy},
 	}, updown, l.state.SelectedWord, 0, maxY)
@@ -219,13 +219,13 @@ func calculateNewViewAndState(c coords, updown int,
 	}
 
 	switch {
-	case c.cursorPos.y + updown < 0: // we are scrolling up out of the frame
+	case c.cursorPos.y+updown < 0: // we are scrolling up out of the frame
 		log.Debugf("scrolling up out of frame")
 		log.Debugf("%v + %v < %v", c.cursorPos.y, updown, 0)
 
 		// we also need to check if we'll exceed the min entries
 		// if the selected word would go below the min
-		if c.originStart.y + updown < minY {
+		if c.originStart.y+updown < minY {
 			log.Debugf("scrolling past min entry")
 			selected = 0
 			out.originStart.y = 0
@@ -236,12 +236,12 @@ func calculateNewViewAndState(c coords, updown int,
 		out.originStart.y = c.originStart.y + updown
 		selected = selected + updown
 
-	case c.cursorPos.y + updown >= c.viewSize.y && maxY > c.viewSize.y:
+	case c.cursorPos.y+updown >= c.viewSize.y && maxY > c.viewSize.y:
 		// we are scrolling down out the frame
 		log.Debugf("scrolling down out of frame")
 		log.Debugf("%v + %v >= %v", c.cursorPos.y, updown, c.viewSize.y)
 
-		if maxY - (c.originStart.y + updown) < c.viewSize.y - 1 {
+		if maxY-(c.originStart.y+updown) < c.viewSize.y-1 {
 			log.Debug("will have incomplete frame")
 			log.Debugf("%v + %v < %v", c.originStart.y, updown, c.viewSize.y)
 
@@ -259,14 +259,14 @@ func calculateNewViewAndState(c coords, updown int,
 
 		out.originStart.y = c.originStart.y + updown
 		selected = selected + updown
-	case c.cursorPos.y + updown >= maxY: // scrolling past a small list
+	case c.cursorPos.y+updown >= maxY: // scrolling past a small list
 		log.Debugf("scrolling past small list")
 		log.Debugf("%v + %v > %v", c.cursorPos.y, updown, maxY)
 		out.cursorPos.y = maxY
 		selected = maxY
 	default: // we are inside the frame
-		log.Debugf("default: cursor   %v + %v" ,c.cursorPos.y, updown)
-		log.Debugf("default: selected %v + %v" ,selected, updown)
+		log.Debugf("default: cursor   %v + %v", c.cursorPos.y, updown)
+		log.Debugf("default: selected %v + %v", selected, updown)
 
 		out.cursorPos.y = c.cursorPos.y + updown
 		selected = selected + updown

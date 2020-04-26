@@ -29,7 +29,7 @@ func (s *SearchView) New(g *gocui.Gui, name string) error {
 // todo add statusbar showing # matches found, time, flags
 func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
-	if err := v.SetCursor(0,0); err != nil {
+	if err := v.SetCursor(0, 0); err != nil {
 		return err
 	}
 

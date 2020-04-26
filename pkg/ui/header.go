@@ -5,7 +5,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type HeaderView DefaultView
+type HeaderView NoBindingsOrUpdatesView
 
 func (h *HeaderView) New(g *gocui.Gui, name string) error {
 	stats := h.dict.Stats()
@@ -34,6 +34,3 @@ func (h *HeaderView) New(g *gocui.Gui, name string) error {
 
 	return nil
 }
-
-func (h *HeaderView) Update(_ *gocui.View) error { return nil }
-func (h *HeaderView) SetKeybindings(_ *gocui.Gui) error { return nil }
