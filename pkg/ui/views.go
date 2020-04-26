@@ -11,6 +11,7 @@ const (
 	defnView        = "definition"
 	currentWordView = "current word"
 	searchView      = "search"
+	statusView      = "status"
 )
 
 type View interface {

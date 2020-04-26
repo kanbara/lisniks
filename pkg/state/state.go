@@ -8,6 +8,8 @@ import (
 type State struct {
 	Words        lexicon.Lexicon
 	SelectedWord int
+	StatusText   string
+	HelpText     string
 }
 
 func (s *State) CurrentWord() *word.Word {

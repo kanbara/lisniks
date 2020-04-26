@@ -10,7 +10,7 @@ type LexiconView DefaultView
 
 func (l *LexiconView) New(g *gocui.Gui, name string) error {
 	_, maxY := g.Size()
-	if v, err := g.SetView(name, 0, 6, 20, maxY-4, 0); err != nil {
+	if v, err := g.SetView(name, 0, 6, 20, maxY-6, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

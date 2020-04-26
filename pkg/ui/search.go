@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/lexicon"
 )
@@ -37,8 +38,11 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	search, err := v.Line(0)
 	if err != nil {
 		newWords = s.dict.Lexicon.Words()
+		s.state.StatusText = fmt.Sprintf("")
 	} else {
 		newWords = s.dict.Lexicon.FindByConWordFuzzy(search)
+		s.state.StatusText = fmt.Sprintf("search for «%v» found %v words",
+			search, len(newWords))
 	}
 
 	v.Clear()
@@ -63,9 +67,15 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 
 func (s *SearchView) Update(_ *gocui.View) error { return nil }
 
-func cancelToLexView(g *gocui.Gui, v *gocui.View) error {
+func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
 	v.Clear()
+	s.state.StatusText = "search canceled"
+
+	if err := s.Manager.updateStatusView(g); err != nil {
+		return err
+	}
+
 	if err := v.SetCursor(0, 0); err != nil {
 		return err
 	}
@@ -74,7 +84,7 @@ func cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding(searchView, gocui.KeyEsc, gocui.ModNone, cancelToLexView); err != nil {
+	if err := g.SetKeybinding(searchView, gocui.KeyEsc, gocui.ModNone, s.cancelToLexView); err != nil {
 		return err
 	}
 
