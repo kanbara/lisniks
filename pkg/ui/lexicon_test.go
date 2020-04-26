@@ -54,8 +54,8 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 			// ------ ++++++
 			// 0      a @
 			// 1 <	  b $
-			//   *
-			//
+			// 2 *
+			// 3
 			// ------ ++++++
 			name: "test scrolling past small view end",
 			args: args{
@@ -75,6 +75,31 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 				originStart: coordinates{y: 0},
 			},
 			selected: 1,
+		},
+		{
+			// bug taken from prod
+			// the issue was that we had a very small view, but large enough s.t. the
+			// updown + cursor.y would be greater than the view.y
+			// however the maxY was smaller than view.y so instead of jumping out
+			// we should have just did the default case and adjusted the selection
+			// accordingly
+			name: "test scrolling past small view when there's one frame but we would jump out",
+			args: args{
+				c: coords{
+					cursorPos:   coordinates{y: 43},
+					originStart: coordinates{y: 0}, // +++++
+					viewSize:    coordinates{y: 52}, // -----
+				},
+				updown:   22, // *
+				selected: 43, // <
+				minY:     0, // @
+				maxY:     43, // $
+			},
+			want: coords{
+				cursorPos:   coordinates{y: 43},
+				originStart: coordinates{y: 0},
+			},
+			selected: 43,
 		},
 		{
 			// ------ ++++++

@@ -86,8 +86,6 @@ func (m *Manager) UpdateLexicon(v *gocui.View) error {
 	return nil
 }
 
-// todo fix nass case..
-// e.g. search for nass, ctrl-f, crashes?
 func (m *Manager) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
 	// the cursorPos highlighted position in the viewSize e.g. which row selected
 	cx, cy := v.Cursor()
@@ -137,6 +135,16 @@ func (m *Manager) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
 
 	err = v.SetOrigin(c.originStart.x, c.originStart.y)
 	if err != nil {
+		// todo this info is super useful, let's wrap the error
+		//panic(fmt.Sprintf("starting cursor(%v,%v)\n" +
+		//	"starting origin(%v,%v)\n" +
+		//	"viewsize(%v,%v)\n" +
+		//	"updown %v\n" +
+		//	"sel %v\n" +
+		//	"0,%v\n" +
+		//	"output****\n" +
+		//	"%#v\n" +
+		//	"sel: %v", cx,cy,ox,oy,vx,vy,updown,m.state.SelectedWord,maxY,c,sel))
 		return err
 	}
 
@@ -249,7 +257,9 @@ func calculateNewViewAndState(c coords, updown int,
 
 		out.originStart.y = c.originStart.y + updown
 		selected = selected + updown
-	case c.cursorPos.y + updown >= c.viewSize.y: // we are scrolling down out the frame
+
+	case c.cursorPos.y + updown >= c.viewSize.y && maxY > c.viewSize.y:
+		// we are scrolling down out the frame
 		log.Debugf("scrolling down out of frame")
 		log.Debugf("%v + %v >= %v", c.cursorPos.y, updown, c.viewSize.y)
 
