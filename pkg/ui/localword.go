@@ -39,5 +39,3 @@ func (l *LocalWordView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (l *LocalWordView) SetKeyBindings(_ *gocui.Gui) error { return nil }
