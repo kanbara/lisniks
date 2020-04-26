@@ -11,5 +11,13 @@ type State struct {
 }
 
 func (s *State) CurrentWord() *word.Word {
+	if len(s.Words) < s.SelectedWord {
+		return nil
+	}
+
+	if len(s.Words) == 0 {
+		return nil
+	}
+
 	return &s.Words[s.SelectedWord]
 }

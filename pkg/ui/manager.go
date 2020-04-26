@@ -25,6 +25,11 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 		return nil
 	}
 
+	err = m.NewSearchView(g)
+	if err != nil {
+		return nil
+	}
+
 	err = m.NewLexiconView(g)
 	if err != nil {
 		return nil
@@ -54,16 +59,6 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 	if err != nil {
 		return nil
 	}
-
-	// TODO this changes to a function when we can switch views
-	g.Highlight = true
-	g.SelFgColor = gocui.ColorGreen
-	g.SelFrameColor = gocui.ColorGreen
-	_, err = g.SetCurrentView(lexView)
-	if err != nil {
-		return nil
-	}
-
 
 	return nil
 }

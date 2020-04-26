@@ -8,6 +8,7 @@ const (
 	localWordView = "local word"
 	defnView = "definition"
 	currentWordView = "current word"
+	searchView = "search"
 )
 
 //func (m *Manager) NextView(g *gocui.Gui, v *gocui.View) error {

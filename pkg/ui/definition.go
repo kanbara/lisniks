@@ -9,7 +9,7 @@ func (m *Manager) NewDefinitionView(g* gocui.Gui) error {
 
 	maxX, maxY := g.Size()
 
-	if v, err := g.SetView(defnView, 21, 14, maxX-1, maxY-1, 0); err != nil {
+	if v, err := g.SetView(defnView, 21, 14, maxX-1, maxY-4, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
@@ -27,9 +27,12 @@ func (m *Manager) NewDefinitionView(g* gocui.Gui) error {
 
 func (m *Manager) UpdateDefinition(v *gocui.View) error {
 	v.Clear()
-	_, err := fmt.Fprintln(v, m.state.CurrentWord().Def)
-	if err != nil {
-		return err
+
+	if m.state.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, m.state.CurrentWord().Def)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

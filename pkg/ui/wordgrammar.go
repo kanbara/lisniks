@@ -26,11 +26,14 @@ func (m *Manager) NewWordGrammarView(g* gocui.Gui) error {
 
 func (m *Manager) UpdateWordGrammarView(v *gocui.View) error {
 	v.Clear()
-	_, err := fmt.Fprintln(v, m.dict.HumanReadableWordClasses(
-		m.state.CurrentWord().Type,
-		m.state.CurrentWord().Classes))
-	if err != nil {
-		return err
+
+	if m.state.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, m.dict.HumanReadableWordClasses(
+			m.state.CurrentWord().Type,
+			m.state.CurrentWord().Classes))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

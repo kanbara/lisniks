@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"github.com/kanbara/lisniks/pkg/language"
 	"github.com/kanbara/lisniks/pkg/word"
-	log "github.com/sirupsen/logrus"
 	"strings"
-	"time"
 )
 
 type Lexicon []word.Word
@@ -38,11 +36,11 @@ func (s *Service) At(index int) *word.Word {
 	return &s.lexicon[index]
 }
 
-func (s*Service) FindByConWord(str string) []*word.Word {
+func (s*Service) FindByConWord(str string) Lexicon {
 	return s.findConWords(str, false)
 }
 
-func (s*Service) FindByConWordFuzzy(str string) []*word.Word {
+func (s*Service) FindByConWordFuzzy(str string) Lexicon {
 	return s.findConWords(str, true)
 }
 
@@ -51,28 +49,25 @@ func (s*Service) FindByConWordFuzzy(str string) []*word.Word {
 // which means we should have an output type that instead of returning []*word.Word
 // should be another type like `Filtered` which is still just a []*word.Word
 // and then all the searches are func (f *Filtered) ByFoo() *Filtered
-func (s *Service) findConWords(str string, fuzzy bool) []*word.Word {
+// todo can also return the time or status string here to display to the view
+func (s *Service) findConWords(str string, fuzzy bool) Lexicon {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
 	// or maybe rank queries with predecessor / successor
 	// and fuzzy search with binary search
-	var words []*word.Word
-
-	n := time.Now()
+	var words []word.Word
 
 	for i := range s.lexicon {
 		if fuzzy {
 			if strings.Contains(string(s.lexicon[i].Con), str) {
-				words = append(words, &s.lexicon[i])
+				words = append(words, s.lexicon[i])
 			}
 		} else {
 			if strings.HasPrefix(string(s.lexicon[i].Con), str) {
-				words = append(words, &s.lexicon[i])
+				words = append(words, s.lexicon[i])
 			}
 		}
 	}
-
-	log.Infof("total time for search: %v", time.Now().Sub(n))
 
 	return words
 }

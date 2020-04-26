@@ -39,6 +39,10 @@ func main() {
 		log.Panicf("Could not set keybinding: %v", err)
 	}
 
+	g.Highlight = true
+	g.SelFgColor = gocui.ColorGreen
+	g.SelFrameColor = gocui.ColorGreen
+
 	if err := g.MainLoop(); err != nil && !gocui.IsQuit(err) {
 		// debug stuff if we crash sometimes
 		// not sure if useful but oh well
@@ -46,9 +50,10 @@ func main() {
 		ox, oy := view.Origin()
 		vx, vy := view.Size()
 		cx, cy := view.Cursor()
+		cur, err := view.Line(cy)
 		p := fmt.Sprintf("%v\nselected: %v\nview: %v\nview origin: %v,%v\n" +
-			"view size: %v, %v\nview cursor: %v,%v\nlexicion list: %v",
-			err, s.SelectedWord, view.Name(), ox, oy, vx, vy, cx, cy, len(s.Words))
+			"view size: %v, %v\nview cursor: %v,%v\nlexicion list: %v\nbuf: `%v`",
+			err, s.SelectedWord, view.Name(), ox, oy, vx, vy, cx, cy, len(s.Words),cur)
 		panic(p)
 	}
 }

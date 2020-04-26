@@ -27,9 +27,12 @@ func (m *Manager) NewLocalWordView(g* gocui.Gui) error {
 
 func (m *Manager) UpdateLocalWordView(v *gocui.View) error {
 	v.Clear()
-	_, err := fmt.Fprintln(v, m.state.CurrentWord().Local)
-	if err != nil {
-		return err
+
+	if m.state.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, m.state.CurrentWord().Local)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -8,9 +8,13 @@ import (
 
 func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 	_, maxY := g.Size()
-	if v, err := g.SetView(lexView, 0, 6, 20, maxY-1, 0); err != nil {
+	if v, err := g.SetView(lexView, 0, 6, 20, maxY-4, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
+		}
+
+		_, err = g.SetCurrentView(lexView)
+		if err != nil {
 		}
 
 		// TODO i wanted to set the title to the current word
@@ -51,6 +55,39 @@ func (m *Manager) NewLexiconView(g *gocui.Gui) error {
 	return nil
 }
 
+func (m *Manager) UpdateLexicon(v *gocui.View) error {
+	v.Clear()
+	m.state.SelectedWord = 0
+
+	if len(m.state.Words) > 0 {
+		for _, w := range m.state.Words {
+			_, err := fmt.Fprintln(v, w.Con)
+			if err != nil {
+				return err
+			}
+		}
+
+		err := v.SetHighlight(0, true)
+		if err != nil {
+			return err
+		}
+
+		err = v.SetCursor(0, 0)
+		if err != nil {
+			return err
+		}
+
+		err = v.SetOrigin(0, 0)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// todo fix nass case..
+// e.g. search for nass, ctrl-f, crashes?
 func (m *Manager) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
 	// the cursorPos highlighted position in the viewSize e.g. which row selected
 	cx, cy := v.Cursor()
@@ -259,10 +296,29 @@ func (m *Manager) nextWord(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+func (m *Manager) jump(g *gocui.Gui, v *gocui.View, ahead bool) error {
+	var jump int
+	_, vy := v.Size()
+	if vy > len(m.state.Words) {
+		jump = len(m.state.Words) / 2
+	} else {
+		jump = vy
+	}
+
+	if !ahead {
+		jump = -jump
+	}
+
+	err := m.updateWord(g, v, jump)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Manager) nextWordJump(g *gocui.Gui, v *gocui.View) error {
-	// get reasonable jump size based on word list
-	onepct := len(m.state.Words) / 100
-	err := m.updateWord(g, v, onepct)
+	err := m.jump(g, v, true)
 	if err != nil {
 		return err
 	}
@@ -280,9 +336,7 @@ func (m *Manager) prevWord(g *gocui.Gui, v *gocui.View) error {
 }
 
 func (m *Manager) prevWordJump(g *gocui.Gui, v *gocui.View) error {
-	// get reasonable jump size based on word list
-	onepct := len(m.state.Words) / 100
-	err := m.updateWord(g, v, -onepct)
+	err := m.jump(g, v, false)
 	if err != nil {
 		return err
 	}

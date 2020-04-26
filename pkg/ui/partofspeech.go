@@ -27,11 +27,14 @@ func (m *Manager) NewPartOfSpeechView(g* gocui.Gui) error {
 
 func (m *Manager) UpdatePartOfSpeech(v *gocui.View) error {
 	v.Clear()
-	v.FgColor = colour(int(m.state.CurrentWord().Type))
 
-	_, err := fmt.Fprintln(v, m.dict.PartsOfSpeech.Get(m.state.CurrentWord().Type))
-	if err != nil {
-		return err
+	if m.state.CurrentWord() != nil {
+		v.FgColor = colour(int(m.state.CurrentWord().Type))
+
+		_, err := fmt.Fprintln(v, m.dict.PartsOfSpeech.Get(m.state.CurrentWord().Type))
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
