@@ -40,5 +40,3 @@ func (w *WordGrammarView) Update(v *gocui.View) error {
 
 	return nil
 }
-
-func (w *WordGrammarView) SetKeyBindings(_ *gocui.Gui) error { return nil }
