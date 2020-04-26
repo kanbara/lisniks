@@ -77,8 +77,8 @@ func TestService_findConWords(t *testing.T) {
 				alphaOrder: tt.fields.alphaOrder,
 			}
 
-			if got := s.findConWords(tt.args.str, tt.args.fuzzy); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("findConWords() = %v, want %v", got, tt.want)
+			if got := s.FindConWords(tt.args.str, tt.args.fuzzy); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindConWords() = %v, want %v", got, tt.want)
 			}
 		})
 	}

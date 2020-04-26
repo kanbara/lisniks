@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
+	"github.com/kanbara/lisniks/pkg/lexicon"
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
 	log "github.com/sirupsen/logrus"
@@ -23,6 +24,12 @@ func main() {
 	s := state.State{
 		Words:        dict.Lexicon.Words(),
 		SelectedWord: 0,
+		SearchFuzzy: true,
+		SearchType: lexicon.SearchTypeConWord,
+		SearchTypes: map[int]string{
+			lexicon.SearchTypeConWord: "con",
+			lexicon.SearchTypeLocalWord: "local",
+		},
 	}
 
 	g, err := gocui.NewGui(gocui.Output256, false)

@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	SearchTypeConWord = iota
+	SearchTypeLocalWord
+)
+
 type Lexicon []word.Word
 
 type Service struct {
@@ -37,11 +42,11 @@ func (s *Service) At(index int) *word.Word {
 }
 
 func (s *Service) FindByConWord(str string) Lexicon {
-	return s.findConWords(str, false)
+	return s.FindConWords(str, false)
 }
 
 func (s *Service) FindByConWordFuzzy(str string) Lexicon {
-	return s.findConWords(str, true)
+	return s.FindConWords(str, true)
 }
 
 // TODO i have the idea that we should be able to chain search filters together
@@ -50,7 +55,7 @@ func (s *Service) FindByConWordFuzzy(str string) Lexicon {
 // should be another type like `Filtered` which is still just a []*word.Word
 // and then all the searches are func (f *Filtered) ByFoo() *Filtered
 // todo can also return the time or status string here to display to the view
-func (s *Service) findConWords(str string, fuzzy bool) Lexicon {
+func (s *Service) FindConWords(str string, fuzzy bool) Lexicon {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
 	// or maybe rank queries with predecessor / successor
@@ -64,6 +69,28 @@ func (s *Service) findConWords(str string, fuzzy bool) Lexicon {
 			}
 		} else {
 			if strings.HasPrefix(string(s.lexicon[i].Con), str) {
+				words = append(words, s.lexicon[i])
+			}
+		}
+	}
+
+	return words
+}
+
+func (s *Service) FindLocalWords(str string, fuzzy bool) Lexicon {
+	// start with simple linear traversal here.
+	// think about using suffix trees or something similar later,
+	// or maybe rank queries with predecessor / successor
+	// and fuzzy search with binary search
+	var words []word.Word
+
+	for i := range s.lexicon {
+		if fuzzy {
+			if strings.Contains(string(s.lexicon[i].Local), str) {
+				words = append(words, s.lexicon[i])
+			}
+		} else {
+			if strings.HasPrefix(string(s.lexicon[i].Local), str) {
 				words = append(words, s.lexicon[i])
 			}
 		}
