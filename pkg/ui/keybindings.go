@@ -4,8 +4,7 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) SetKeybindings(g *gocui.Gui) error {
-	// todo loop thru keybindings too
+func (m *Manager) SetGlobalKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quitfn); err != nil {
 		return err
 	}
@@ -17,21 +16,5 @@ func (m *Manager) SetKeybindings(g *gocui.Gui) error {
 	return nil
 }
 
-// TODO move these things someplace better
-func quitfn(_ *gocui.Gui, _ *gocui.View) error {
-	return gocui.ErrQuit
-}
-
-func toSearchView(g *gocui.Gui, _ *gocui.View) error {
-	g.Cursor = true
-	return toView(g, searchView)
-}
-
-func toView(g *gocui.Gui, view string) error {
-	_, err := g.SetCurrentView(view)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
+// used to send the `error` which quits the program
+func quitfn(_ *gocui.Gui, _ *gocui.View) error { return gocui.ErrQuit }

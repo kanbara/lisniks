@@ -17,7 +17,6 @@ func NewManager(dict *dictionary.Dictionary, state *state.State) *Manager {
 }
 
 func (m *Manager) Layout(g *gocui.Gui) error {
-
 	if m.views == nil {
 		m.views = map[string]View{
 			headerView: &HeaderView{m, nil},

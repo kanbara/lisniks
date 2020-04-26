@@ -35,7 +35,7 @@ func main() {
 	m := ui.NewManager(dict, &s)
 	g.SetManager(m)
 
-	err = m.SetKeybindings(g)
+	err = m.SetGlobalKeybindings(g)
 	if err != nil {
 		log.Panicf("Could not set keybinding: %v", err)
 	}

@@ -41,3 +41,5 @@ func (p *PartOfSpeechView) Update(v *gocui.View) error {
 
 	return nil
 }
+
+func (p *PartOfSpeechView) SetKeybindings(_ *gocui.Gui) error { return nil }

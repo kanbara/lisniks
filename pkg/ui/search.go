@@ -27,11 +27,9 @@ func (s *SearchView) New(g *gocui.Gui, name string) error {
 // todo add flag and field for fuzzy
 // todo add regex
 // todo add statusbar showing # matches found, time, flags
-
 func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
-	err := v.SetCursor(0,0)
-	if err != nil {
+	if err := v.SetCursor(0,0); err != nil {
 		return err
 	}
 
@@ -43,6 +41,7 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 		newWords = s.dict.Lexicon.FindByConWordFuzzy(search)
 	}
 
+	v.Clear()
 	g.Update(func(g *gocui.Gui) error {
 		s.state.Words = newWords
 
@@ -67,15 +66,14 @@ func (s *SearchView) Update(_ *gocui.View) error { return nil }
 func cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
 	v.Clear()
-	err := v.SetCursor(0, 0)
-	if err != nil {
+	if err := v.SetCursor(0, 0); err != nil {
 		return err
 	}
 
 	return toView(g, lexView)
 }
 
-func (s *SearchView) SetKeyBindings(g *gocui.Gui) error {
+func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding(searchView, gocui.KeyEsc, gocui.ModNone, cancelToLexView); err != nil {
 		return err
 	}

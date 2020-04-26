@@ -44,3 +44,5 @@ func (c *CurrentWordView) Update(v *gocui.View) error {
 
 	return nil
 }
+
+func (c *CurrentWordView) SetKeybindings(_ *gocui.Gui) error { return nil }

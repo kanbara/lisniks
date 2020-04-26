@@ -24,6 +24,20 @@ type DefaultView struct {
 	viewsToUpdate []string
 }
 
+func toSearchView(g *gocui.Gui, _ *gocui.View) error {
+	g.Cursor = true
+	return toView(g, searchView)
+}
+
+func toView(g *gocui.Gui, view string) error {
+	_, err := g.SetCurrentView(view)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //func (m *Manager) NextView(g *gocui.Gui, v *gocui.View) error {
 //	a.viewIndex = (a.viewIndex + 1) % len(VIEWS)
 //	return a.setView(g)

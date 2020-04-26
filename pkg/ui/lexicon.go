@@ -88,9 +88,8 @@ func (l *LexiconView) Update(v *gocui.View) error {
 	return nil
 }
 
-func (l *LexiconView) SetKeyBindings(g *gocui.Gui) error {
-
-	if err := g.SetKeybinding(lexView, gocui.KeyArrowDown, gocui.ModNone, l.nextWord); err != nil {
+func (l *LexiconView) SetKeybindings(g *gocui.Gui) error {
+	if err := g.SetKeybinding(lexView, gocui.KeyArrowDown, gocui.ModNone, l.NextWord); err != nil {
 		return err
 	}
 
@@ -276,7 +275,7 @@ func calculateNewViewAndState(c coords, updown int,
 	return out, selected
 }
 
-func (l *LexiconView) nextWord(g *gocui.Gui, v *gocui.View) error {
+func (l *LexiconView) NextWord(g *gocui.Gui, v *gocui.View) error {
 	err := l.updateWord(g, v, 1)
 	if err != nil {
 		return err
