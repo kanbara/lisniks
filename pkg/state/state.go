@@ -6,7 +6,7 @@ import (
 )
 
 type State struct {
-	Words lexicon.Lexicon
+	Words        lexicon.Lexicon
 	SelectedWord int
 }
 

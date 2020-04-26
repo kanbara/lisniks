@@ -5,18 +5,20 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) NewPartOfSpeechView(g* gocui.Gui) error {
+type PartOfSpeechView NoBindingsView
+
+func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(posView, 21, 11, maxX-1, 13, 0); err != nil {
+	if v, err := g.SetView(name, 21, 11, maxX-1, 13, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = posView
-		v.FgColor = colour(int(m.state.CurrentWord().Type))
-		err := m.UpdatePartOfSpeech(v)
+		v.Title = name
+		v.FgColor = colour(int(p.state.CurrentWord().Type))
+		err := p.Update(v)
 		if err != nil {
 			return err
 		}
@@ -25,13 +27,13 @@ func (m *Manager) NewPartOfSpeechView(g* gocui.Gui) error {
 	return nil
 }
 
-func (m *Manager) UpdatePartOfSpeech(v *gocui.View) error {
+func (p *PartOfSpeechView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if m.state.CurrentWord() != nil {
-		v.FgColor = colour(int(m.state.CurrentWord().Type))
+	if p.state.CurrentWord() != nil {
+		v.FgColor = colour(int(p.state.CurrentWord().Type))
 
-		_, err := fmt.Fprintln(v, m.dict.PartsOfSpeech.Get(m.state.CurrentWord().Type))
+		_, err := fmt.Fprintln(v, p.dict.PartsOfSpeech.Get(p.state.CurrentWord().Type))
 		if err != nil {
 			return err
 		}

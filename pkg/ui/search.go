@@ -5,16 +5,18 @@ import (
 	"github.com/kanbara/lisniks/pkg/lexicon"
 )
 
-func (m *Manager) NewSearchView(g* gocui.Gui) error {
+type SearchView DefaultView
+
+func (s *SearchView) New(g *gocui.Gui, name string) error {
 
 	maxX, maxY := g.Size()
 
-	if v, err := g.SetView(searchView, 0, maxY-3, maxX-1, maxY-1, 0); err != nil {
+	if v, err := g.SetView(name, 0, maxY-3, maxX-1, maxY-1, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = searchView
+		v.Title = name
 		v.Frame = true
 		v.Editable = true
 	}
@@ -25,89 +27,60 @@ func (m *Manager) NewSearchView(g* gocui.Gui) error {
 // todo add flag and field for fuzzy
 // todo add regex
 // todo add statusbar showing # matches found, time, flags
-
-func (m *Manager) execSearch(g *gocui.Gui, v *gocui.View) error {
+func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
-	err := v.SetCursor(0,0)
-	if err != nil {
+	if err := v.SetCursor(0, 0); err != nil {
 		return err
 	}
 
 	var newWords lexicon.Lexicon
 	search, err := v.Line(0)
 	if err != nil {
-		newWords = m.dict.Lexicon.Words()
+		newWords = s.dict.Lexicon.Words()
 	} else {
-		newWords = m.dict.Lexicon.FindByConWordFuzzy(search)
+		newWords = s.dict.Lexicon.FindByConWordFuzzy(search)
 	}
 
+	v.Clear()
 	g.Update(func(g *gocui.Gui) error {
-		// todo fixme
-		m.state.Words = newWords
-		v.Clear()
+		s.state.Words = newWords
 
-		v, err := g.View(lexView)
-		if err != nil {
-			return err
-		}
-
-		err = m.UpdateLexicon(v)
-		if err != nil {
-			return err
-		}
-
-		v, err = g.View(posView)
-		if err != nil {
-			return err
-		}
-
-		err = m.UpdatePartOfSpeech(v)
-		if err != nil {
-			return err
-		}
-
-		v, err = g.View(currentWordView)
-		if err != nil {
-			return err
-		}
-
-		err = m.updateCurrentWordView(v)
-		if err != nil {
-			return err
-		}
-
-		v, err = g.View(localWordView)
-		if err != nil {
-			return err
-		}
-
-		err = m.UpdateLocalWordView(v)
-		if err != nil {
-			return err
-		}
-
-		v, err = g.View(wordGrammarView)
-		if err != nil {
-			return err
-		}
-
-		err = m.UpdateWordGrammarView(v)
-		if err != nil {
-			return err
-		}
-
-		v, err = g.View(defnView)
-		if err != nil {
-			return err
-		}
-
-		err = m.UpdateDefinition(v)
-		if err != nil {
-			return err
+		for _, viewName := range s.viewsToUpdate {
+			if v, err := g.View(viewName); err != nil {
+				return err
+			} else {
+				if err := s.views[viewName].Update(v); err != nil {
+					return err
+				}
+			}
 		}
 
 		return nil
 	})
 
 	return toView(g, lexView)
+}
+
+func (s *SearchView) Update(_ *gocui.View) error { return nil }
+
+func cancelToLexView(g *gocui.Gui, v *gocui.View) error {
+	g.Cursor = false
+	v.Clear()
+	if err := v.SetCursor(0, 0); err != nil {
+		return err
+	}
+
+	return toView(g, lexView)
+}
+
+func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
+	if err := g.SetKeybinding(searchView, gocui.KeyEsc, gocui.ModNone, cancelToLexView); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding(searchView, gocui.KeyEnter, gocui.ModNone, s.execSearch); err != nil {
+		return err
+	}
+
+	return nil
 }

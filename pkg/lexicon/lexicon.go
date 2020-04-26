@@ -10,7 +10,7 @@ import (
 type Lexicon []word.Word
 
 type Service struct {
-	lexicon Lexicon
+	lexicon    Lexicon
 	alphaOrder language.AlphaOrderMap
 }
 
@@ -36,11 +36,11 @@ func (s *Service) At(index int) *word.Word {
 	return &s.lexicon[index]
 }
 
-func (s*Service) FindByConWord(str string) Lexicon {
+func (s *Service) FindByConWord(str string) Lexicon {
 	return s.findConWords(str, false)
 }
 
-func (s*Service) FindByConWordFuzzy(str string) Lexicon {
+func (s *Service) FindByConWordFuzzy(str string) Lexicon {
 	return s.findConWords(str, true)
 }
 

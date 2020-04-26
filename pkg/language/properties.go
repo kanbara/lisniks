@@ -32,8 +32,6 @@ func (a *AlphaOrderMap) UnmarshalXML(d *xml.Decoder, start xml.StartElement) err
 		ao[runes[i]] = int64(i)
 	}
 
-
-
 	// the unmarshaler calls the function on an empty instance of this type
 	// and the data is stored in the xml.StartElement
 	// this means we actually set the pointer of this type to the instance we create

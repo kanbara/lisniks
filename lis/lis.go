@@ -21,7 +21,8 @@ func main() {
 
 	dict := dictionary.NewDictFromFile(*dictFile)
 	s := state.State{
-		Words: dict.Lexicon.Words(),
+		Words:        dict.Lexicon.Words(),
+		SelectedWord: 0,
 	}
 
 	g, err := gocui.NewGui(gocui.Output256, false)
@@ -34,7 +35,7 @@ func main() {
 	m := ui.NewManager(dict, &s)
 	g.SetManager(m)
 
-	err = m.SetKeybindings(g)
+	err = m.SetGlobalKeybindings(g)
 	if err != nil {
 		log.Panicf("Could not set keybinding: %v", err)
 	}
@@ -51,9 +52,9 @@ func main() {
 		vx, vy := view.Size()
 		cx, cy := view.Cursor()
 		cur, err := view.Line(cy)
-		p := fmt.Sprintf("%v\nselected: %v\nview: %v\nview origin: %v,%v\n" +
+		p := fmt.Sprintf("%v\nselected: %v\nview: %v\nview origin: %v,%v\n"+
 			"view size: %v, %v\nview cursor: %v,%v\nlexicion list: %v\nbuf: `%v`",
-			err, s.SelectedWord, view.Name(), ox, oy, vx, vy, cx, cy, len(s.Words),cur)
+			err, s.SelectedWord, view.Name(), ox, oy, vx, vy, cx, cy, len(s.Words), cur)
 		panic(p)
 	}
 }

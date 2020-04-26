@@ -5,18 +5,20 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-func (m *Manager) NewLocalWordView(g* gocui.Gui) error {
+type LocalWordView NoBindingsView
+
+func (l *LocalWordView) New(g *gocui.Gui, name string) error {
 
 	maxX, _ := g.Size()
 
-	if v, err := g.SetView(localWordView, 21, 3, maxX-1, 5, 0); err != nil {
+	if v, err := g.SetView(name, 21, 3, maxX-1, 5, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		v.Title = localWordView
+		v.Title = name
 		v.FgColor = gocui.ColorYellow
-		err := m.UpdateLocalWordView(v)
+		err := l.Update(v)
 		if err != nil {
 			return err
 		}
@@ -25,11 +27,11 @@ func (m *Manager) NewLocalWordView(g* gocui.Gui) error {
 	return nil
 }
 
-func (m *Manager) UpdateLocalWordView(v *gocui.View) error {
+func (l *LocalWordView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if m.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, m.state.CurrentWord().Local)
+	if l.state.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, l.state.CurrentWord().Local)
 		if err != nil {
 			return err
 		}

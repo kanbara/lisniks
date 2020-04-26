@@ -3,61 +3,47 @@ package ui
 import (
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
-	 "github.com/kanbara/lisniks/pkg/state"
+	"github.com/kanbara/lisniks/pkg/state"
 )
 
 type Manager struct {
-	dict *dictionary.Dictionary
+	dict  *dictionary.Dictionary
 	state *state.State
+	views map[string]View
 }
 
 func NewManager(dict *dictionary.Dictionary, state *state.State) *Manager {
-	return &Manager{dict:dict, state:state}
+	return &Manager{dict: dict, state: state}
 }
 
 func (m *Manager) Layout(g *gocui.Gui) error {
+	if m.views == nil {
 
-	// TODO fix the instantiation and object creation here
-	// i would like to have some sort of map for the positions with percentages
-	// as well as various function generators or sth so it's not so messy
-	err := m.NewHeaderView(g)
-	if err != nil {
-		return nil
-	}
+		nbu := &NilBindingsAndUpdates{}
+		nb := &NilBindings{}
 
-	err = m.NewSearchView(g)
-	if err != nil {
-		return nil
-	}
+		m.views = map[string]View{
+			headerView: &HeaderView{m, nbu},
+			searchView: &SearchView{m, []string{
+				posView, lexView, currentWordView, localWordView, wordGrammarView, defnView}},
+			lexView: &LexiconView{m, []string{
+				posView, currentWordView, localWordView, wordGrammarView, defnView}},
+			currentWordView: &CurrentWordView{m, nb},
+			localWordView:   &LocalWordView{m, nb},
+			posView:         &PartOfSpeechView{m, nb},
+			wordGrammarView: &WordGrammarView{m, nb},
+			defnView:        &DefinitionView{m, nb},
+		}
 
-	err = m.NewLexiconView(g)
-	if err != nil {
-		return nil
-	}
+		for name, view := range m.views {
+			if err := view.New(g, name); err != nil {
+				return err
+			}
 
-	err = m.NewCurrentWordView(g)
-	if err != nil {
-		return nil
-	}
-
-	err = m.NewLocalWordView(g)
-	if err != nil {
-		return nil
-	}
-
-	err = m.NewPartOfSpeechView(g)
-	if err != nil {
-		return nil
-	}
-
-	err = m.NewWordGrammarView(g)
-	if err != nil {
-		return nil
-	}
-
-	err = m.NewDefinitionView(g)
-	if err != nil {
-		return nil
+			if err := view.SetKeybindings(g); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
