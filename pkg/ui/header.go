@@ -32,4 +32,3 @@ func (h *HeaderView) New(g *gocui.Gui, name string) error {
 }
 
 func (h *HeaderView) Update(_ *gocui.View) error { return nil }
-func (h *HeaderView) SetKeyBindings(_ *gocui.Gui) error { return nil }
