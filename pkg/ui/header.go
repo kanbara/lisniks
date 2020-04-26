@@ -18,6 +18,10 @@ func (h *HeaderView) New(g *gocui.Gui, name string) error {
 			return err
 		}
 
+		if _, err := g.SetViewOnBottom(name); err != nil {
+			return err
+		}
+
 		_, err := fmt.Fprintln(v, langAndVersion)
 		_, err = fmt.Fprintln(v, stats)
 
