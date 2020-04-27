@@ -241,7 +241,7 @@ func calculateNewViewAndState(c coords, updown int,
 		out.originStart.y = c.originStart.y + updown
 		selected = selected + updown
 
-	case c.cursorPos.y+updown >= c.viewSize.y && maxY > c.viewSize.y:
+	case c.cursorPos.y+updown >= c.viewSize.y && maxY >= c.viewSize.y:
 		// we are scrolling down out the frame
 		log.Debugf("scrolling down out of frame")
 		log.Debugf("%v + %v >= %v", c.cursorPos.y, updown, c.viewSize.y)
@@ -264,7 +264,7 @@ func calculateNewViewAndState(c coords, updown int,
 
 		out.originStart.y = c.originStart.y + updown
 		selected = selected + updown
-	case c.cursorPos.y+updown >= maxY: // scrolling past a small list
+	case c.cursorPos.y+updown > maxY: // scrolling past a small list
 		log.Debugf("scrolling past small list")
 		log.Debugf("%v + %v > %v", c.cursorPos.y, updown, maxY)
 		out.cursorPos.y = maxY

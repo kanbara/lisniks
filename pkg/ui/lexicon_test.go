@@ -453,6 +453,28 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 			},
 			selected: 0,
 		},
+		{
+			// i had the wrong comparision operator, so this "off by one" case was triggering
+			// scrolling past small window instead of scrolling down out of frame
+			name: "test zerrslidžan case",
+			args: args{
+				c: coords{
+					// disregard all x coords (for now?)
+					cursorPos:   coordinates{y: 28},
+					originStart: coordinates{y: 0}, // +++++
+					viewSize:    coordinates{y: 29}, // -----
+				},
+				updown:   1, // *
+				selected: 28,  // <
+				minY:     0,  // @
+				maxY:     29,  // $
+			},
+			want: coords{
+				cursorPos:   coordinates{y: 28},
+				originStart: coordinates{y: 1},
+			},
+			selected: 29,
+		},
 	}
 
 	for _, tt := range tests {
