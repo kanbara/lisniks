@@ -53,14 +53,16 @@ func (s *Service) At(index int) *word.Word {
 }
 
 func (s *Service) found(str string, w s.Rawstring, pattern SearchPattern) (bool, error) {
+	lstr := strings.ToLower(str)
+	lw := strings.ToLower(string(w))
 
 	switch pattern {
 	case SearchFuzzy:
-		if strings.Contains(string(w), str) {
+		if strings.Contains(lw, lstr) {
 			return true, nil
 		}
 	case SearchNormal:
-		if strings.HasPrefix(string(w), str) {
+		if strings.HasPrefix(lw, lstr) {
 			return true, nil
 		}
 	case SearchRegex:
