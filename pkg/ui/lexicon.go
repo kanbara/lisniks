@@ -110,6 +110,10 @@ func (l *LexiconView) SetKeybindings(g *gocui.Gui) error {
 }
 
 func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
+	if len(l.state.Words) == 0 {
+		return nil
+	}
+
 	// the cursorPos highlighted position in the viewSize e.g. which row selected
 	cx, cy := v.Cursor()
 

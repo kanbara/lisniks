@@ -11,10 +11,13 @@ type State struct {
 	StatusText   string
 	HelpText     string
 
-	SearchPattern lexicon.SearchPattern
+	SearchPattern  lexicon.SearchPattern
 	SearchPatterns map[lexicon.SearchPattern]string
-	SearchType   lexicon.SearchType
-	SearchTypes  map[lexicon.SearchType]string
+	SearchType     lexicon.SearchType
+	SearchTypes    map[lexicon.SearchType]string
+	SearchQueue     Queue
+	CurrentSearch string
+	QueuePos int
 }
 
 func (s *State) CurrentWord() *word.Word {

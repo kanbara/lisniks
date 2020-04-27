@@ -14,7 +14,8 @@ func TestService_findConWords(t *testing.T) {
 
 	type args struct {
 		str   string
-		fuzzy bool
+		sp SearchPattern
+		st SearchType
 	}
 
 	tests := []struct {
@@ -35,8 +36,9 @@ func TestService_findConWords(t *testing.T) {
 				},
 			},
 			args: args{
-				str:   "ad",
-				fuzzy: false,
+				str: "ad",
+				st:  SearchTypeConWord,
+				sp:  SearchPatternNormal,
 			},
 			want: Lexicon{
 				{Con:     "adgemoǆan"},
@@ -58,7 +60,8 @@ func TestService_findConWords(t *testing.T) {
 			},
 			args: args{
 				str:   "a",
-				fuzzy: true,
+				st:  SearchTypeConWord,
+				sp:  SearchPatternFuzzy,
 			},
 			want: Lexicon{
 				{Con:     "adgemoǆan"},
@@ -77,8 +80,14 @@ func TestService_findConWords(t *testing.T) {
 				alphaOrder: tt.fields.alphaOrder,
 			}
 
-			if got := s.FindConWords(tt.args.str, tt.args.fuzzy); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FindConWords() = %v, want %v", got, tt.want)
+			if got, err := s.FindWords(tt.args.str,
+				tt.args.sp,
+				tt.args.st); !reflect.DeepEqual(got, tt.want) {
+				if err != nil {
+					t.Errorf("FindWords() got err: %v", err)
+				}
+
+				t.Errorf("FindWords() = %v, want %v", got, tt.want)
 			}
 		})
 	}

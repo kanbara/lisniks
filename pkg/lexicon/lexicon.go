@@ -18,9 +18,9 @@ const (
 )
 
 const (
-	SearchFuzzy SearchPattern = iota
-	SearchRegex
-	SearchNormal
+	SearchPatternFuzzy SearchPattern = iota
+	SearchPatternRegex
+	SearchPatternNormal
 )
 
 type Lexicon []word.Word
@@ -57,15 +57,15 @@ func (s *Service) found(str string, w s.Rawstring, pattern SearchPattern) (bool,
 	lw := strings.ToLower(string(w))
 
 	switch pattern {
-	case SearchFuzzy:
+	case SearchPatternFuzzy:
 		if strings.Contains(lw, lstr) {
 			return true, nil
 		}
-	case SearchNormal:
+	case SearchPatternNormal:
 		if strings.HasPrefix(lw, lstr) {
 			return true, nil
 		}
-	case SearchRegex:
+	case SearchPatternRegex:
 		matched, err := regexp.Match(str, []byte(w))
 		if err != nil {
 			return false, err

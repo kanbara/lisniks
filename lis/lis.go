@@ -24,17 +24,19 @@ func main() {
 	s := state.State{
 		Words:        dict.Lexicon.Words(),
 		SelectedWord: 0,
-		SearchPattern: lexicon.SearchFuzzy,
+		SearchPattern: lexicon.SearchPatternFuzzy,
 		SearchPatterns: map[lexicon.SearchPattern]string{
-			lexicon.SearchFuzzy: "fuzzy",
-			lexicon.SearchNormal: "startswith",
-			lexicon.SearchRegex: "regex",
+			lexicon.SearchPatternFuzzy:  "fuzzy",
+			lexicon.SearchPatternNormal: "startswith",
+			lexicon.SearchPatternRegex:  "regex",
 		},
 		SearchType: lexicon.SearchTypeConWord,
 		SearchTypes: map[lexicon.SearchType]string{
 			lexicon.SearchTypeConWord: "con",
 			lexicon.SearchTypeLocalWord: "local",
 		},
+		SearchQueue: state.NewQueue(50),
+		QueuePos: -1,
 	}
 
 	g, err := gocui.NewGui(gocui.Output256, false)
