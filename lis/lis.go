@@ -24,9 +24,14 @@ func main() {
 	s := state.State{
 		Words:        dict.Lexicon.Words(),
 		SelectedWord: 0,
-		SearchFuzzy: true,
+		SearchPattern: lexicon.SearchFuzzy,
+		SearchPatterns: map[lexicon.SearchPattern]string{
+			lexicon.SearchFuzzy: "fuzzy",
+			lexicon.SearchNormal: "startswith",
+			lexicon.SearchRegex: "regex",
+		},
 		SearchType: lexicon.SearchTypeConWord,
-		SearchTypes: map[int]string{
+		SearchTypes: map[lexicon.SearchType]string{
 			lexicon.SearchTypeConWord: "con",
 			lexicon.SearchTypeLocalWord: "local",
 		},

@@ -25,14 +25,8 @@ func (s *SearchView) New(g *gocui.Gui, name string) error {
 	return nil
 }
 
-// todo add flag and field for fuzzy
-// todo add regex
-// todo add statusbar showing # matches found, time, flags
 func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
-	if err := v.SetCursor(0, 0); err != nil {
-		return err
-	}
 
 	var newWords lexicon.Lexicon
 	search, err := v.Line(0)
@@ -40,12 +34,20 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 		newWords = s.dict.Lexicon.Words()
 		s.state.StatusText = fmt.Sprintf("")
 	} else {
-		switch s.state.SearchType {
-		case lexicon.SearchTypeLocalWord:
-			newWords = s.dict.Lexicon.FindLocalWords(search, s.state.SearchFuzzy)
-		case lexicon.SearchTypeConWord:
-			newWords = s.dict.Lexicon.FindConWords(search, s.state.SearchFuzzy)
+		newWords, err = s.dict.Lexicon.FindWords(search, s.state.SearchPattern, s.state.SearchType)
+		if err != nil {
+			s.state.StatusText = fmt.Sprintf("ERROR %v", err)
+			if err := s.updateStatusView(g); err != nil {
+				return err
+			}
+
+			return toView(g, lexView)
 		}
+
+		if err := v.SetCursor(0, 0); err != nil {
+			return err
+		}
+
 		s.state.StatusText = fmt.Sprintf("search for «%v» found %v words",
 			search, len(newWords))
 	}
@@ -88,9 +90,22 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	return toView(g, lexView)
 }
 
-func (s *SearchView) advanceSearchMode(g *gocui.Gui, _ *gocui.View) error {
+func (s *SearchView) advanceSearchType(g *gocui.Gui, _ *gocui.View) error {
 	l := len(s.state.SearchTypes)
-	s.state.SearchType = (s.state.SearchType + 1) % l
+	s.state.SearchType = (s.state.SearchType + 1) % lexicon.SearchType(l)
+
+	if v, err := g.View(searchView); err != nil {
+		return nil
+	} else {
+		s.updateTitle(v)
+	}
+
+	return nil
+}
+
+func (s *SearchView) advanceSearchPattern(g *gocui.Gui, _ *gocui.View) error {
+	l := len(s.state.SearchPatterns)
+	s.state.SearchPattern = (s.state.SearchPattern + 1) % lexicon.SearchPattern(l)
 
 	if v, err := g.View(searchView); err != nil {
 		return nil
@@ -102,22 +117,9 @@ func (s *SearchView) advanceSearchMode(g *gocui.Gui, _ *gocui.View) error {
 }
 
 func (s *SearchView) updateTitle(v *gocui.View) {
-	v.Title = fmt.Sprintf("search %v", s.state.SearchTypes[s.state.SearchType])
-	if s.state.SearchFuzzy {
-		v.Title += " fuzzy"
-	}
-}
-
-func (s *SearchView) toggleFuzzy(g *gocui.Gui, _ *gocui.View) error {
-	s.state.SearchFuzzy = !s.state.SearchFuzzy
-
-	if v, err := g.View(searchView); err != nil {
-		return nil
-	} else {
-		s.updateTitle(v)
-	}
-
-	return nil
+	v.Title = fmt.Sprintf("search %v %v",
+		s.state.SearchTypes[s.state.SearchType],
+		s.state.SearchPatterns[s.state.SearchPattern])
 }
 
 func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
@@ -129,11 +131,11 @@ func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
 		return err
 	}
 
-	if err := g.SetKeybinding(lexView, 't', gocui.ModNone, s.advanceSearchMode); err != nil {
+	if err := g.SetKeybinding(lexView, 't', gocui.ModNone, s.advanceSearchType); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(lexView, 'f', gocui.ModNone, s.toggleFuzzy); err != nil {
+	if err := g.SetKeybinding(lexView, 'f', gocui.ModNone, s.advanceSearchPattern); err != nil {
 		return err
 	}
 

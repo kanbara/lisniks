@@ -10,9 +10,11 @@ type State struct {
 	SelectedWord int
 	StatusText   string
 	HelpText     string
-	SearchFuzzy  bool
-	SearchType   int
-	SearchTypes  map[int]string
+
+	SearchPattern lexicon.SearchPattern
+	SearchPatterns map[lexicon.SearchPattern]string
+	SearchType   lexicon.SearchType
+	SearchTypes  map[lexicon.SearchType]string
 }
 
 func (s *State) CurrentWord() *word.Word {

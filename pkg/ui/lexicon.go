@@ -25,7 +25,7 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 		//
 		// i saw an issue on the thing about unicode, maybe there's a fix
 		// that can be done.
-		v.Title = name
+		v.Title = fmt.Sprintf("%v %v/%v",name, len(l.state.Words), l.dict.Lexicon.Len())
 		v.Frame = true
 		v.Highlight = true
 		v.SelFgColor = gocui.ColorGreen
@@ -60,6 +60,7 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 func (l *LexiconView) Update(v *gocui.View) error {
 	v.Clear()
 	l.state.SelectedWord = 0
+	v.Title = fmt.Sprintf("%v %v/%v", lexView, len(l.state.Words), l.dict.Lexicon.Len())
 
 	if len(l.state.Words) > 0 {
 		for _, w := range l.state.Words {

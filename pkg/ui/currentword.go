@@ -29,14 +29,7 @@ func (c *CurrentWordView) Update(v *gocui.View) error {
 	v.Clear()
 
 	if c.state.CurrentWord() != nil {
-		v.FgColor = gocui.ColorGreen
 		_, err := fmt.Fprintln(v, c.state.CurrentWord().Con)
-		if err != nil {
-			return err
-		}
-	} else {
-		v.FgColor = gocui.ColorRed
-		_, err := fmt.Fprintln(v, "NO WORDS FOUND")
 		if err != nil {
 			return err
 		}
