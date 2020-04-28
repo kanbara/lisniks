@@ -456,7 +456,7 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 		{
 			// i had the wrong comparision operator, so this "off by one" case was triggering
 			// scrolling past small window instead of scrolling down out of frame
-			name: "test zerrslidžan case",
+			name: "test zerrslidžan case (30 dž items with view size 29)",
 			args: args{
 				c: coords{
 					// disregard all x coords (for now?)

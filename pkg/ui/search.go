@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/lexicon"
+	"github.com/kanbara/lisniks/pkg/state"
 )
 
 type SearchView DefaultView
@@ -17,7 +18,7 @@ func (s *SearchView) New(g *gocui.Gui, name string) error {
 			return err
 		}
 
-		s.updateTitle(v)
+		s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
 		v.Frame = true
 		v.Editable = true
 	}
@@ -50,7 +51,11 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 			return err
 		}
 
-		s.state.SearchQueue.Enqueue(search)
+		s.state.SearchQueue.Enqueue(state.SearchData{
+			Type: s.state.SearchType,
+			Pattern: s.state.SearchPattern,
+			String: search,
+		})
 		s.state.StatusText = fmt.Sprintf("search for «%v» found %v words",
 			search, len(newWords))
 	}
@@ -82,6 +87,7 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	s.state.QueuePos = -1
 	s.state.CurrentSearch = ""
 	v.Clear()
+	s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
 	s.state.StatusText = "search canceled"
 
 	if err := s.Manager.updateStatusView(g); err != nil {
@@ -102,7 +108,7 @@ func (s *SearchView) advanceSearchType(g *gocui.Gui, _ *gocui.View) error {
 	if v, err := g.View(searchView); err != nil {
 		return nil
 	} else {
-		s.updateTitle(v)
+		s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
 	}
 
 	return nil
@@ -115,16 +121,16 @@ func (s *SearchView) advanceSearchPattern(g *gocui.Gui, _ *gocui.View) error {
 	if v, err := g.View(searchView); err != nil {
 		return nil
 	} else {
-		s.updateTitle(v)
+		s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
 	}
 
 	return nil
 }
 
-func (s *SearchView) updateTitle(v *gocui.View) {
+func (s *SearchView) updateTitle(v *gocui.View, t lexicon.SearchType, p lexicon.SearchPattern) {
 	v.Title = fmt.Sprintf("search %v %v",
-		s.state.SearchTypes[s.state.SearchType],
-		s.state.SearchPatterns[s.state.SearchPattern])
+		s.state.SearchTypes[t],
+		s.state.SearchPatterns[p])
 }
 
 func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
@@ -160,7 +166,7 @@ func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
 		}
 
 		v.WriteString(s.state.CurrentSearch)
-
+		s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
 		return nil
 	}
 
@@ -170,13 +176,15 @@ func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
 	if peek := s.state.SearchQueue.Peek(s.state.QueuePos); peek != nil {
 		v.Clear()
 
+		p := *peek
 		// write the word at 0,0, not where the cursor was before
 		if err := v.SetWritePos(0, 0); err != nil {
 			return err
 		}
 
-		v.WriteString(*peek)
-		if err := v.SetCursor(len(*peek), 0); err != nil {
+		s.updateTitle(v, p.Type, p.Pattern)
+		v.WriteString(p.String)
+		if err := v.SetCursor(len(p.String), 0); err != nil {
 			return err
 		}
 	}

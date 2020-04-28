@@ -15,7 +15,7 @@ type State struct {
 	SearchPatterns map[lexicon.SearchPattern]string
 	SearchType     lexicon.SearchType
 	SearchTypes    map[lexicon.SearchType]string
-	SearchQueue     Queue
+	SearchQueue     SearchQueue
 	CurrentSearch string
 	QueuePos int
 }

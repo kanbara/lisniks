@@ -35,7 +35,7 @@ func main() {
 			lexicon.SearchTypeConWord: "con",
 			lexicon.SearchTypeLocalWord: "local",
 		},
-		SearchQueue: state.NewQueue(50),
+		SearchQueue: state.NewSearchQueue(50),
 		QueuePos: -1,
 	}
 

@@ -78,7 +78,7 @@ func TestStack_Enqueue(t *testing.T) {
 			wantData: []string{"a", "b"},
 		},
 		{
-			name: "test enqueue with size left, removing others",
+			name: "test enqueue with size left, removing other",
 			fields: fields{
 				data: []string{"a", "b", "c"},
 				max:  5,
