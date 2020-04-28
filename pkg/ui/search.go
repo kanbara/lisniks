@@ -52,9 +52,9 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 		}
 
 		s.state.SearchQueue.Enqueue(search.Data{
-			Type: s.state.SearchType,
+			Type:    s.state.SearchType,
 			Pattern: s.state.SearchPattern,
-			String: word,
+			String:  word,
 		})
 		s.state.StatusText = fmt.Sprintf("search for «%v» found %v words",
 			word, len(newWords))
@@ -144,9 +144,9 @@ func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
 		word, err := v.Line(0)
 		if err != gocui.ErrInvalidPoint && word != "" {
 			s.state.CurrentSearch = search.Data{
-				Type: s.state.SearchType,
+				Type:    s.state.SearchType,
 				Pattern: s.state.SearchPattern,
-				String: word,
+				String:  word,
 			}
 		}
 	}
@@ -224,6 +224,34 @@ func (s *SearchView) queueDown(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+func (s *SearchView) moveLeft(_ *gocui.Gui, v *gocui.View) error {
+	if err := v.SetCursor(0, 0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *SearchView) moveRight(_ *gocui.Gui, v *gocui.View) error {
+	w := v.ViewBuffer()
+	if w != "" {
+		if err := v.SetCursor(len([]rune(w)), 0); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *SearchView) delete(_ *gocui.Gui, v *gocui.View) error {
+	v.Clear()
+	if err := v.SetCursor(0,0); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding(searchView, gocui.KeyEsc, gocui.ModNone, s.cancelToLexView); err != nil {
 		return err
@@ -246,6 +274,18 @@ func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
 	}
 
 	if err := g.SetKeybinding(searchView, gocui.KeyArrowDown, gocui.ModNone, s.queueDown); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding(searchView, gocui.KeyCtrlA, gocui.ModNone, s.moveLeft); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding(searchView, gocui.KeyCtrlE, gocui.ModNone, s.moveRight); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding(searchView, gocui.KeyCtrlW, gocui.ModNone, s.delete); err != nil {
 		return err
 	}
 	return nil

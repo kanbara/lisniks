@@ -91,6 +91,12 @@ func (s *Service) FindWords(str string, sp search.Pattern, st search.Type) (Lexi
 			} else if match {
 				words = append(words, s.lexicon[i])
 			}
+		case search.TypeDefnWord:
+			if match, err := s.found(str, s.lexicon[i].Def, sp); err != nil {
+				return nil, err
+			} else if match {
+				words = append(words, s.lexicon[i])
+			}
 		}
 	}
 

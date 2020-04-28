@@ -6,6 +6,7 @@ type Pattern int
 const (
 	TypeConWord Type = iota
 	TypeLocalWord
+	TypeDefnWord
 )
 
 const (

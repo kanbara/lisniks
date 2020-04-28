@@ -34,6 +34,7 @@ func main() {
 		SearchTypes: map[search.Type]string{
 			search.TypeConWord: "con",
 			search.TypeLocalWord: "local",
+			search.TypeDefnWord: "defn",
 		},
 		SearchQueue: search.NewQueue(50),
 		QueuePos: -1,
