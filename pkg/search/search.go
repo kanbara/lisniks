@@ -12,8 +12,12 @@ const (
 const (
 	PatternFuzzy Pattern = iota
 	PatternRegex
+	PatternRegexVC
 	PatternNormal
 )
+
+const RegexV = "[aeiouAEOIUāēīōūĀĒĪŌŪ]"
+const RegexC = "[pbmvfhtdnszčǆšžňřłjrkgncPBMVFHTDNSZČǅǄŠŽŇŘŁJRKGNC]"
 
 type Data struct {
 	Type    Type

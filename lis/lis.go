@@ -29,6 +29,7 @@ func main() {
 			search.PatternFuzzy:  "fuzzy",
 			search.PatternNormal: "startswith",
 			search.PatternRegex:  "regex",
+			search.PatternRegexVC: "regex + CV",
 		},
 		SearchType: search.TypeConWord,
 		SearchTypes: map[search.Type]string{

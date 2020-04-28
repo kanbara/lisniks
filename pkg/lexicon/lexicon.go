@@ -59,6 +59,18 @@ func (s *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool
 		}
 
 		return matched, nil
+	case search.PatternRegexVC:
+		// first substitute our C and V for the regex classes
+		str = strings.ReplaceAll(str, "V", search.RegexV)
+		str = strings.ReplaceAll(str, "C", search.RegexC)
+		str := "^" + str + "$"
+
+		matched, err := regexp.Match(str, []byte(w))
+		if err != nil {
+			return false, err
+		}
+
+		return matched, nil
 	}
 
 	return false, nil
