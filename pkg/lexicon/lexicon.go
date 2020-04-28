@@ -3,24 +3,11 @@ package lexicon
 import (
 	"fmt"
 	"github.com/kanbara/lisniks/pkg/language"
+	"github.com/kanbara/lisniks/pkg/search"
 	s "github.com/kanbara/lisniks/pkg/strings"
 	"github.com/kanbara/lisniks/pkg/word"
 	"regexp"
 	"strings"
-)
-
-type SearchType int
-type SearchPattern int
-
-const (
-	SearchTypeConWord SearchType = iota
-	SearchTypeLocalWord
-)
-
-const (
-	SearchPatternFuzzy SearchPattern = iota
-	SearchPatternRegex
-	SearchPatternNormal
 )
 
 type Lexicon []word.Word
@@ -52,20 +39,20 @@ func (s *Service) At(index int) *word.Word {
 	return &s.lexicon[index]
 }
 
-func (s *Service) found(str string, w s.Rawstring, pattern SearchPattern) (bool, error) {
+func (s *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool, error) {
 	lstr := strings.ToLower(str)
 	lw := strings.ToLower(string(w))
 
 	switch pattern {
-	case SearchPatternFuzzy:
+	case search.PatternFuzzy:
 		if strings.Contains(lw, lstr) {
 			return true, nil
 		}
-	case SearchPatternNormal:
+	case search.PatternNormal:
 		if strings.HasPrefix(lw, lstr) {
 			return true, nil
 		}
-	case SearchPatternRegex:
+	case search.PatternRegex:
 		matched, err := regexp.Match(str, []byte(w))
 		if err != nil {
 			return false, err
@@ -83,7 +70,7 @@ func (s *Service) found(str string, w s.Rawstring, pattern SearchPattern) (bool,
 // should be another type like `Filtered` which is still just a []*word.Word
 // and then all the searches are func (f *Filtered) ByFoo() *Filtered
 // todo can also return the time or status string here to display to the view
-func (s *Service) FindWords(str string, sp SearchPattern, st SearchType) (Lexicon, error) {
+func (s *Service) FindWords(str string, sp search.Pattern, st search.Type) (Lexicon, error) {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
 	// or maybe rank queries with predecessor / successor
@@ -92,13 +79,13 @@ func (s *Service) FindWords(str string, sp SearchPattern, st SearchType) (Lexico
 
 	for i := range s.lexicon {
 		switch st {
-		case SearchTypeConWord:
+		case search.TypeConWord:
 			if match, err := s.found(str, s.lexicon[i].Con, sp); err != nil {
 				return nil, err
 			} else if match {
 				words = append(words, s.lexicon[i])
 			}
-		case SearchTypeLocalWord:
+		case search.TypeLocalWord:
 			if match, err := s.found(str, s.lexicon[i].Local, sp); err != nil {
 				return nil, err
 			} else if match {

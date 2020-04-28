@@ -1,4 +1,4 @@
-package state
+package search
 
 import (
 	"reflect"
@@ -7,40 +7,40 @@ import (
 
 func TestSearchQueue_Dequeue(t *testing.T) {
 	type fields struct {
-		data []SearchData
+		data []Data
 		max  int
 	}
 
 	tests := []struct {
 		name      string
 		fields    fields
-		wantQueue SearchQueue
-		wantItem  SearchData
+		wantQueue Queue
+		wantItem  Data
 	}{
 		{
 			name: "test dequeue item",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 					{Type: 0, Pattern: 0, String: "c"},
 				},
 				max: 30,
 			},
-			wantQueue: SearchQueue{
-				data: []SearchData{
+			wantQueue: Queue{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "b"},
 					{Type: 0, Pattern: 0, String: "c"},
 				},
 				max: 30,
 			},
-			wantItem: SearchData{Type: 0, Pattern: 0, String: "a"},
+			wantItem: Data{Type: 0, Pattern: 0, String: "a"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &SearchQueue{
+			s := &Queue{
 				data: tt.fields.data,
 				max:  tt.fields.max,
 			}
@@ -59,30 +59,30 @@ func TestSearchQueue_Dequeue(t *testing.T) {
 
 func TestSearchQueue_Enqueue(t *testing.T) {
 	type fields struct {
-		data []SearchData
+		data []Data
 		max  int
 	}
 
 	type args struct {
-		str SearchData
+		str Data
 	}
 
 	tests := []struct {
 		name     string
 		fields   fields
 		args     args
-		wantData []SearchData
+		wantData []Data
 	}{
 		{
 			name: "test enqueue with size left",
 			fields: fields{
-				data: []SearchData{{Type: 0, Pattern: 0, String: "a"}},
+				data: []Data{{Type: 0, Pattern: 0, String: "a"}},
 				max:  4,
 			},
 			args: args{
-				str: SearchData{Type: 0, Pattern: 0, String: "b"},
+				str: Data{Type: 0, Pattern: 0, String: "b"},
 			},
-			wantData: []SearchData{
+			wantData: []Data{
 				{Type: 0, Pattern: 0, String: "a"},
 				{Type: 0, Pattern: 0, String: "b"},
 			},
@@ -90,7 +90,7 @@ func TestSearchQueue_Enqueue(t *testing.T) {
 		{
 			name: "test enqueue with size left, removing others",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 					{Type: 0, Pattern: 0, String: "c"},
@@ -98,9 +98,9 @@ func TestSearchQueue_Enqueue(t *testing.T) {
 				max: 5,
 			},
 			args: args{
-				str: SearchData{Type: 0, Pattern: 0, String: "b"},
+				str: Data{Type: 0, Pattern: 0, String: "b"},
 			},
-			wantData: []SearchData{
+			wantData: []Data{
 				{Type: 0, Pattern: 0, String: "a"},
 				{Type: 0, Pattern: 0, String: "c"},
 				{Type: 0, Pattern: 0, String: "b"},
@@ -109,16 +109,16 @@ func TestSearchQueue_Enqueue(t *testing.T) {
 		{
 			name: "test enqueue with no size left",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"}, // should end up with {"b", "c"}
 					{Type: 0, Pattern: 0, String: "b"},
 				},
 				max: 2,
 			},
 			args: args{
-				str: SearchData{Type: 0, Pattern: 0, String: "c"},
+				str: Data{Type: 0, Pattern: 0, String: "c"},
 			},
-			wantData: []SearchData{
+			wantData: []Data{
 				{Type: 0, Pattern: 0, String: "b"}, // should end up with {"b", "c"}
 				{Type: 0, Pattern: 0, String: "c"},
 			},
@@ -127,8 +127,8 @@ func TestSearchQueue_Enqueue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := NewSearchQueue(tt.fields.max)
-			s.data = make([]SearchData, 0, tt.fields.max)
+			s := NewQueue(tt.fields.max)
+			s.data = make([]Data, 0, tt.fields.max)
 			for i := range tt.fields.data {
 				s.data = append(s.data, tt.fields.data[i])
 			}
@@ -151,7 +151,7 @@ func TestSearchQueue_Enqueue(t *testing.T) {
 //func sptr(str string) *string { return &str }
 func TestSearchQueue_Peek(t *testing.T) {
 	type fields struct {
-		data []SearchData
+		data []Data
 		max  int
 	}
 
@@ -163,12 +163,12 @@ func TestSearchQueue_Peek(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   *SearchData
+		want   *Data
 	}{
 		{
 			name: "peek valid index",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 				},
@@ -177,12 +177,12 @@ func TestSearchQueue_Peek(t *testing.T) {
 			args: args{
 				i: 1, // goes from right to left
 			},
-			want: &SearchData{Type: 0, Pattern: 0, String: "a"},
+			want: &Data{Type: 0, Pattern: 0, String: "a"},
 		},
 		{
 			name: "peek invalid index",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 				},
@@ -196,7 +196,7 @@ func TestSearchQueue_Peek(t *testing.T) {
 		{
 			name: "peek last",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 				},
@@ -205,12 +205,12 @@ func TestSearchQueue_Peek(t *testing.T) {
 			args: args{
 				i: 1,
 			},
-			want: &SearchData{Type: 0, Pattern: 0, String: "a"},
+			want: &Data{Type: 0, Pattern: 0, String: "a"},
 		},
 		{
 			name: "peek first",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 				},
@@ -219,13 +219,13 @@ func TestSearchQueue_Peek(t *testing.T) {
 			args: args{
 				i: 0,
 			},
-			want: &SearchData{Type: 0, Pattern: 0, String: "b"},
+			want: &Data{Type: 0, Pattern: 0, String: "b"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &SearchQueue{
+			s := &Queue{
 				data: tt.fields.data,
 				max:  tt.fields.max,
 			}
@@ -239,33 +239,33 @@ func TestSearchQueue_Peek(t *testing.T) {
 
 func TestSearchQueue_RemoveOthers(t *testing.T) {
 	type fields struct {
-		data []SearchData
+		data []Data
 		max  int
 	}
 
 	type args struct {
-		str SearchData
+		str Data
 	}
 
 	tests := []struct {
 		name     string
 		fields   fields
 		args     args
-		wantData []SearchData
+		wantData []Data
 	}{
 		{
 			name: "test removing others of the same",
 			fields: fields{
-				data: []SearchData{
+				data: []Data{
 					{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 					{Type: 0, Pattern: 0, String: "c"},
 				},
 			},
 			args: args{
-				str: SearchData{Type: 0, Pattern: 0, String: "b"},
+				str: Data{Type: 0, Pattern: 0, String: "b"},
 			},
-			wantData: []SearchData{
+			wantData: []Data{
 				{Type: 0, Pattern: 0, String: "a"},
 				{Type: 0, Pattern: 0, String: "c"},
 			},
@@ -273,16 +273,16 @@ func TestSearchQueue_RemoveOthers(t *testing.T) {
 		{
 			name: "test removing others of the same multiple",
 			fields: fields{
-				data: []SearchData{{Type: 0, Pattern: 0, String: "a"},
+				data: []Data{{Type: 0, Pattern: 0, String: "a"},
 					{Type: 0, Pattern: 0, String: "b"},
 					{Type: 0, Pattern: 0, String: "c"},
 					{Type: 0, Pattern: 0, String: "b"},
 				},
 			},
 			args: args{
-				str: SearchData{Type: 0, Pattern: 0, String: "b"},
+				str: Data{Type: 0, Pattern: 0, String: "b"},
 			},
-			wantData: []SearchData{
+			wantData: []Data{
 				{Type: 0, Pattern: 0, String: "a"},
 				{Type: 0, Pattern: 0, String: "c"},
 			},
@@ -291,7 +291,7 @@ func TestSearchQueue_RemoveOthers(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &SearchQueue{
+			s := &Queue{
 				data: tt.fields.data,
 				max:  tt.fields.max,
 			}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
-	"github.com/kanbara/lisniks/pkg/lexicon"
+	"github.com/kanbara/lisniks/pkg/search"
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
 	log "github.com/sirupsen/logrus"
@@ -24,18 +24,18 @@ func main() {
 	s := state.State{
 		Words:        dict.Lexicon.Words(),
 		SelectedWord: 0,
-		SearchPattern: lexicon.SearchPatternFuzzy,
-		SearchPatterns: map[lexicon.SearchPattern]string{
-			lexicon.SearchPatternFuzzy:  "fuzzy",
-			lexicon.SearchPatternNormal: "startswith",
-			lexicon.SearchPatternRegex:  "regex",
+		SearchPattern: search.PatternRegex,
+		SearchPatterns: map[search.Pattern]string{
+			search.PatternFuzzy:  "fuzzy",
+			search.PatternNormal: "startswith",
+			search.PatternRegex:  "regex",
 		},
-		SearchType: lexicon.SearchTypeConWord,
-		SearchTypes: map[lexicon.SearchType]string{
-			lexicon.SearchTypeConWord: "con",
-			lexicon.SearchTypeLocalWord: "local",
+		SearchType: search.TypeConWord,
+		SearchTypes: map[search.Type]string{
+			search.TypeConWord: "con",
+			search.TypeLocalWord: "local",
 		},
-		SearchQueue: state.NewSearchQueue(50),
+		SearchQueue: search.NewQueue(50),
 		QueuePos: -1,
 	}
 

@@ -12,6 +12,7 @@ const (
 	currentWordView = "current word"
 	searchView      = "search"
 	statusView      = "status"
+	debugView       = "debug"
 )
 
 type View interface {

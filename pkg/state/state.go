@@ -2,6 +2,7 @@ package state
 
 import (
 	"github.com/kanbara/lisniks/pkg/lexicon"
+	"github.com/kanbara/lisniks/pkg/search"
 	"github.com/kanbara/lisniks/pkg/word"
 )
 
@@ -11,13 +12,13 @@ type State struct {
 	StatusText   string
 	HelpText     string
 
-	SearchPattern  lexicon.SearchPattern
-	SearchPatterns map[lexicon.SearchPattern]string
-	SearchType     lexicon.SearchType
-	SearchTypes    map[lexicon.SearchType]string
-	SearchQueue     SearchQueue
-	CurrentSearch string
-	QueuePos int
+	SearchPattern  search.Pattern
+	SearchPatterns map[search.Pattern]string
+	SearchType     search.Type
+	SearchTypes    map[search.Type]string
+	SearchQueue    search.Queue
+	CurrentSearch  search.Data
+	QueuePos       int
 }
 
 func (s *State) CurrentWord() *word.Word {

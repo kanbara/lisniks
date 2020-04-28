@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/lexicon"
-	"github.com/kanbara/lisniks/pkg/state"
+	"github.com/kanbara/lisniks/pkg/search"
 )
 
 type SearchView DefaultView
@@ -29,15 +29,15 @@ func (s *SearchView) New(g *gocui.Gui, name string) error {
 func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
 	s.state.QueuePos = -1
-	s.state.CurrentSearch = ""
+	s.state.CurrentSearch = search.Data{}
 
 	var newWords lexicon.Lexicon
-	search, err := v.Line(0)
+	word, err := v.Line(0)
 	if err != nil {
 		newWords = s.dict.Lexicon.Words()
 		s.state.StatusText = fmt.Sprintf("")
 	} else {
-		newWords, err = s.dict.Lexicon.FindWords(search, s.state.SearchPattern, s.state.SearchType)
+		newWords, err = s.dict.Lexicon.FindWords(word, s.state.SearchPattern, s.state.SearchType)
 		if err != nil {
 			s.state.StatusText = fmt.Sprintf("%v", err)
 			if err := s.updateStatusView(g); err != nil {
@@ -51,13 +51,13 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 			return err
 		}
 
-		s.state.SearchQueue.Enqueue(state.SearchData{
+		s.state.SearchQueue.Enqueue(search.Data{
 			Type: s.state.SearchType,
 			Pattern: s.state.SearchPattern,
-			String: search,
+			String: word,
 		})
 		s.state.StatusText = fmt.Sprintf("search for «%v» found %v words",
-			search, len(newWords))
+			word, len(newWords))
 	}
 
 	s.state.Words = newWords
@@ -85,7 +85,8 @@ func (s *SearchView) Update(_ *gocui.View) error { return nil }
 func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
 	s.state.QueuePos = -1
-	s.state.CurrentSearch = ""
+	s.state.CurrentSearch = search.Data{}
+
 	v.Clear()
 	s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
 	s.state.StatusText = "search canceled"
@@ -103,7 +104,7 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 
 func (s *SearchView) advanceSearchType(g *gocui.Gui, _ *gocui.View) error {
 	l := len(s.state.SearchTypes)
-	s.state.SearchType = (s.state.SearchType + 1) % lexicon.SearchType(l)
+	s.state.SearchType = (s.state.SearchType + 1) % search.Type(l)
 
 	if v, err := g.View(searchView); err != nil {
 		return nil
@@ -116,7 +117,7 @@ func (s *SearchView) advanceSearchType(g *gocui.Gui, _ *gocui.View) error {
 
 func (s *SearchView) advanceSearchPattern(g *gocui.Gui, _ *gocui.View) error {
 	l := len(s.state.SearchPatterns)
-	s.state.SearchPattern = (s.state.SearchPattern + 1) % lexicon.SearchPattern(l)
+	s.state.SearchPattern = (s.state.SearchPattern + 1) % search.Pattern(l)
 
 	if v, err := g.View(searchView); err != nil {
 		return nil
@@ -127,7 +128,7 @@ func (s *SearchView) advanceSearchPattern(g *gocui.Gui, _ *gocui.View) error {
 	return nil
 }
 
-func (s *SearchView) updateTitle(v *gocui.View, t lexicon.SearchType, p lexicon.SearchPattern) {
+func (s *SearchView) updateTitle(v *gocui.View, t search.Type, p search.Pattern) {
 	v.Title = fmt.Sprintf("search %v %v",
 		s.state.SearchTypes[t],
 		s.state.SearchPatterns[p])
@@ -140,9 +141,13 @@ func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
 	}
 
 	if s.state.QueuePos == -1 {
-		search, err := v.Line(0)
-		if err != gocui.ErrInvalidPoint && search != "" {
-			s.state.CurrentSearch = search
+		word, err := v.Line(0)
+		if err != gocui.ErrInvalidPoint && word != "" {
+			s.state.CurrentSearch = search.Data{
+				Type: s.state.SearchType,
+				Pattern: s.state.SearchPattern,
+				String: word,
+			}
 		}
 	}
 
@@ -161,18 +166,24 @@ func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
 			return err
 		}
 
-		if err := v.SetCursor(len(s.state.CurrentSearch), 0); err != nil {
+		// []rune is needed here, or else we get the wrong string len with >1 byte chars!
+		if err := v.SetCursor(len([]rune(s.state.CurrentSearch.String)), 0); err != nil {
 			return err
 		}
 
-		v.WriteString(s.state.CurrentSearch)
-		s.updateTitle(v, s.state.SearchType, s.state.SearchPattern)
+		// write the word, and also pop the current search states so that we
+		// end up making the correct search
+		v.WriteString(s.state.CurrentSearch.String)
+		s.updateTitle(v, s.state.CurrentSearch.Type, s.state.CurrentSearch.Pattern)
+		s.state.SearchType = s.state.CurrentSearch.Type
+		s.state.SearchPattern = s.state.CurrentSearch.Pattern
 		return nil
 	}
 
 	// advance the queue position
 	s.state.QueuePos = s.state.QueuePos + move
 
+	// if we have a word in the queue at this index
 	if peek := s.state.SearchQueue.Peek(s.state.QueuePos); peek != nil {
 		v.Clear()
 
@@ -182,9 +193,14 @@ func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
 			return err
 		}
 
+		// write the word and pop the search states here too!
+		s.state.SearchType = p.Type
+		s.state.SearchPattern = p.Pattern
 		s.updateTitle(v, p.Type, p.Pattern)
 		v.WriteString(p.String)
-		if err := v.SetCursor(len(p.String), 0); err != nil {
+
+		// []rune is needed here, or else we get the wrong string len with >1 byte chars!
+		if err := v.SetCursor(len([]rune(p.String)), 0); err != nil {
 			return err
 		}
 	}

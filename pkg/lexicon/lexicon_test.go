@@ -2,6 +2,7 @@ package lexicon
 
 import (
 	"github.com/kanbara/lisniks/pkg/language"
+	"github.com/kanbara/lisniks/pkg/search"
 	"reflect"
 	"testing"
 )
@@ -14,8 +15,8 @@ func TestService_findConWords(t *testing.T) {
 
 	type args struct {
 		str   string
-		sp SearchPattern
-		st SearchType
+		sp search.Pattern
+		st search.Type
 	}
 
 	tests := []struct {
@@ -37,8 +38,8 @@ func TestService_findConWords(t *testing.T) {
 			},
 			args: args{
 				str: "ad",
-				st:  SearchTypeConWord,
-				sp:  SearchPatternNormal,
+				st:  search.TypeConWord,
+				sp:  search.PatternNormal,
 			},
 			want: Lexicon{
 				{Con:     "adgemoǆan"},
@@ -60,8 +61,8 @@ func TestService_findConWords(t *testing.T) {
 			},
 			args: args{
 				str:   "a",
-				st:  SearchTypeConWord,
-				sp:  SearchPatternFuzzy,
+				st:  search.TypeConWord,
+				sp:  search.PatternFuzzy,
 			},
 			want: Lexicon{
 				{Con:     "adgemoǆan"},

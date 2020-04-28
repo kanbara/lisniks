@@ -1,28 +1,38 @@
-package state
+package search
 
-import (
-	"github.com/kanbara/lisniks/pkg/lexicon"
+type Type int
+type Pattern int
+
+const (
+	TypeConWord Type = iota
+	TypeLocalWord
 )
 
-type SearchData struct {
-	Type    lexicon.SearchType
-	Pattern lexicon.SearchPattern
+const (
+	PatternFuzzy Pattern = iota
+	PatternRegex
+	PatternNormal
+)
+
+type Data struct {
+	Type    Type
+	Pattern Pattern
 	String  string
 }
 
-type SearchQueue struct {
-	data []SearchData
+type Queue struct {
+	data []Data
 	max int
 }
 
-func NewSearchQueue(max int) SearchQueue {
-	d := make([]SearchData, 0, max)
-	return SearchQueue{max: max, data: d}
+func NewQueue(max int) Queue {
+	d := make([]Data, 0, max)
+	return Queue{max: max, data: d}
 }
 
-func (s *SearchQueue) RemoveOthers(sd SearchData) {
+func (s *Queue) RemoveOthers(sd Data) {
 	n := 0
-	nd := make([]SearchData, len(s.data)) // at most we'll have len(String.data) points
+	nd := make([]Data, len(s.data)) // at most we'll have len(String.data) points
 	for _, x := range s.data {
 		if x.String != sd.String || // string compare first, as that'String more likely to short circuit
 			x.Type != sd.Type ||
@@ -35,7 +45,7 @@ func (s *SearchQueue) RemoveOthers(sd SearchData) {
 	s.data = nd[:n]
 }
 
-func (s *SearchQueue) Enqueue(sd SearchData) {
+func (s *Queue) Enqueue(sd Data) {
 
 	s.RemoveOthers(sd)
 
@@ -46,12 +56,12 @@ func (s *SearchQueue) Enqueue(sd SearchData) {
 	s.data = append(s.data, sd)
 }
 
-func (s *SearchQueue) Dequeue() *SearchData {
+func (s *Queue) Dequeue() *Data {
 	if len(s.data) == 0 {
 		return nil
 	}
 
-	n := SearchQueue{
+	n := Queue{
 		max: s.max,
 		data: s.data[1:len(s.data)],
 	}
@@ -62,7 +72,7 @@ func (s *SearchQueue) Dequeue() *SearchData {
 	return &popped
 }
 
-func (s *SearchQueue) Peek(i int) *SearchData {
+func (s *Queue) Peek(i int) *Data {
 	if i < len(s.data) {
 		return &s.data[len(s.data)-i-1]
 	}
@@ -70,6 +80,6 @@ func (s *SearchQueue) Peek(i int) *SearchData {
 	return nil
 }
 
-func (s *SearchQueue) Len() int {
+func (s *Queue) Len() int {
 	return len(s.data)
 }
