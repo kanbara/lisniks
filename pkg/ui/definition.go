@@ -39,33 +39,84 @@ func (d *DefinitionView) Update(v *gocui.View) error {
 
 	x, _ := v.Size()
 	if d.state.CurrentWord() != nil {
-
-		modified := breakWordBoundaries(d.state.CurrentWord().Def.String(), x-2)
-		_, err := fmt.Fprintln(v, modified)
-		if err != nil {
-			return err
-		}
+		//fmt.Printf(fmt.Sprintf("\n\n\n\n%q", d.state.CurrentWord().Def.String()))
+		modified := wordWrap(d.state.CurrentWord().Def.String(), x-1)
+				_, err := fmt.Fprintln(v, modified)
+				if err != nil {
+					return err
+				}
 	}
 
 	return nil
 }
 
-func breakWordBoundaries(word string, lineWidth int) string {
+func wordWrap(word string, lineWidth int) string {
 	//shamelessely lifted this from the stupid internet and implemented it here
 	spaceLeft := lineWidth
-	out := make([]string, 0, len(word))
+	var out string
 
-	words := strings.Split(word, " ")
-	for _, w := range words {
-		if len([]rune(w)) + spaceWidth > spaceLeft {
-			out = append(out, "\n")
-			out = append(out, w)
-			spaceLeft = lineWidth - len([]rune(w))
-		} else {
-			out = append(out, w)
-			spaceLeft = spaceLeft - (len([]rune(w)) + spaceWidth)
+
+	wordsSpace := strings.Split(word, " ")
+	var words []string
+
+	// go thru each word to check if we have newlines, ffs
+	for _, w := range wordsSpace {
+		tmp := ""
+		for _, c := range w {
+			// fml finding newlines
+			// how can nothing like this exist srsly wtf
+			// i just want to split a string on char C and
+			// keep the C in the slice! (×﹏×)
+
+			// if we have no newline, keep growing the word
+			if c != '\n' {
+				tmp += string(c)
+			// if we have a newline, append the word and newline
+			// and reset the word tmp thing
+			} else {
+				words = append(words, []string{tmp, "\n"}...)
+				tmp = ""
+			}
+		}
+
+		// if we get to the end with no newline, e.g. our word is ["this"]
+		// write it out
+		if tmp != "" {
+			words = append(words, tmp)
 		}
 	}
 
-	return strings.Join(out, " ")
+	for i, w := range words {
+
+		// there may already be \n's here
+		if w == "\n" {
+			out += "\n"
+			spaceLeft = lineWidth
+			continue
+		}
+
+		// word+space is greater than space left on line
+		// so we add a newline
+		if len([]rune(w)) + spaceWidth > spaceLeft {
+			out += "\n"
+
+			// of course the space is now subtracted from the word
+			// that's at the start of the next line
+			spaceLeft = lineWidth - len([]rune(w))
+		} else {
+			// just subtract the word and space width from the remaining width on the line
+
+			// don't put a space at first
+			//also don't put a space if we just had a newline
+			if i != 0 && words[i-1] != "\n" {
+					out += " "
+			}
+			spaceLeft = spaceLeft - (len([]rune(w)) + spaceWidth)
+		}
+
+		// add the word to our string
+		out += w
+	}
+
+	return out
 }
