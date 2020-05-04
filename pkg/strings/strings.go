@@ -51,7 +51,7 @@ func (r Rawstring) String() string {
 		s += child.Data
 	}
 	// i've noticed some html bits end with extra \n\n's, let's get rid of those too
-	return strings.TrimSpace(s)
+	return html.UnescapeString(strings.TrimSpace(s))
 }
 
 // a function which iterates recursively over the HTML nodes
