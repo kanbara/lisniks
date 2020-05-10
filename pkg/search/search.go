@@ -4,16 +4,14 @@ type Type int
 type Pattern int
 
 const (
-	TypeConWord Type = iota
-	TypeLocalWord
-	TypeDefnWord
+	TypeAustrianWord Type = iota
+	TypeEnglishWord
+	TypeWordDefinition
 )
 
 const (
-	PatternFuzzy Pattern = iota
-	PatternRegex
+	PatternRegex Pattern = iota
 	PatternRegexVC
-	PatternNormal
 )
 
 const RegexV = "[aeiouAEOIUāēīōūĀĒĪŌŪ]"

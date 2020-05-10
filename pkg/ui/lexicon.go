@@ -32,7 +32,7 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 		v.FgColor = gocui.ColorWhite
 
 		for _, w := range l.state.Words {
-			_, err := fmt.Fprintln(v, w.Con)
+			_, err := fmt.Fprintln(v, w.Austrian)
 			if err != nil {
 				return err
 			}
@@ -64,7 +64,7 @@ func (l *LexiconView) Update(v *gocui.View) error {
 
 	if len(l.state.Words) > 0 {
 		for _, w := range l.state.Words {
-			_, err := fmt.Fprintln(v, w.Con)
+			_, err := fmt.Fprintln(v, w.Austrian)
 			if err != nil {
 				return err
 			}

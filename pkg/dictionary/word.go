@@ -31,8 +31,8 @@ func (d *Dictionary) HumanReadableWordClasses(wordType int64, classes []word.Cla
 
 func (d *Dictionary) PrettyWord(w *word.Word) string {
 	return fmt.Sprintf("%v (%v) [%v] #%v\n%v\n\tdef: %v\n",
-		w.Con,
-		w.Local,
+		w.Austrian,
+		w.English,
 		d.PartsOfSpeech.Get(w.Type),
 		w.WordID,
 		d.HumanReadableWordClasses(w.Type, w.Classes),

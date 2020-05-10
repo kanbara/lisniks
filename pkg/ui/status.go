@@ -10,7 +10,7 @@ type StatusView NoBindingsView
 func (s *StatusView) New(g *gocui.Gui, name string) error {
 
 	maxX, maxY := g.Size()
-	if v, err := g.SetView(name, 0, maxY-5, maxX/2, maxY-3, 0); err != nil {
+	if v, err := g.SetView(name, 0, maxY-5, maxX, maxY-3, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

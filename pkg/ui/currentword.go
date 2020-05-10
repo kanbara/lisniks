@@ -29,7 +29,7 @@ func (c *CurrentWordView) Update(v *gocui.View) error {
 	v.Clear()
 
 	if c.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, c.state.CurrentWord().Con)
+		_, err := fmt.Fprintln(v, c.state.CurrentWord().Austrian)
 		if err != nil {
 			return err
 		}

@@ -31,7 +31,7 @@ func (l *LocalWordView) Update(v *gocui.View) error {
 	v.Clear()
 
 	if l.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, l.state.CurrentWord().Local)
+		_, err := fmt.Fprintln(v, l.state.CurrentWord().English)
 		if err != nil {
 			return err
 		}

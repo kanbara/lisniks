@@ -8,12 +8,12 @@ import (
 )
 
 type Word struct {
-	WordID  int64             `xml:"wordId"`
-	Local   strings.Rawstring `xml:"localWord"`
-	Con     strings.Rawstring `xml:"conWord"`
-	Type    int64             `xml:"wordTypeId"`
-	Def     strings.Rawstring `xml:"definition"`
-	Classes []Class           `xml:"wordClassCollection>wordClassification"`
+	WordID   int64             `xml:"wordId"`
+	English  strings.Rawstring `xml:"localWord"`
+	Austrian strings.Rawstring `xml:"conWord"`
+	Type     int64             `xml:"wordTypeId"`
+	Def      strings.Rawstring `xml:"definition"`
+	Classes  []Class           `xml:"wordClassCollection>wordClassification"`
 }
 
 // WordClass allows us to add a custom unmarshaler to get the values out in a way

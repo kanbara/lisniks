@@ -40,18 +40,7 @@ func (s *Service) At(index int) *word.Word {
 }
 
 func (s *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool, error) {
-	lstr := strings.ToLower(str)
-	lw := strings.ToLower(w.String())
-
 	switch pattern {
-	case search.PatternFuzzy:
-		if strings.Contains(lw, lstr) {
-			return true, nil
-		}
-	case search.PatternNormal:
-		if strings.HasPrefix(lw, lstr) {
-			return true, nil
-		}
 	case search.PatternRegex:
 		matched, err := regexp.Match(str, []byte(w.String()))
 		if err != nil {
@@ -91,19 +80,19 @@ func (s *Service) FindWords(str string, sp search.Pattern, st search.Type) (Lexi
 
 	for i := range s.lexicon {
 		switch st {
-		case search.TypeConWord:
-			if match, err := s.found(str, s.lexicon[i].Con, sp); err != nil {
+		case search.TypeAustrianWord:
+			if match, err := s.found(str, s.lexicon[i].Austrian, sp); err != nil {
 				return nil, err
 			} else if match {
 				words = append(words, s.lexicon[i])
 			}
-		case search.TypeLocalWord:
-			if match, err := s.found(str, s.lexicon[i].Local, sp); err != nil {
+		case search.TypeEnglishWord:
+			if match, err := s.found(str, s.lexicon[i].English, sp); err != nil {
 				return nil, err
 			} else if match {
 				words = append(words, s.lexicon[i])
 			}
-		case search.TypeDefnWord:
+		case search.TypeWordDefinition:
 			if match, err := s.found(str, s.lexicon[i].Def, sp); err != nil {
 				return nil, err
 			} else if match {
@@ -118,7 +107,7 @@ func (s *Service) FindWords(str string, sp search.Pattern, st search.Type) (Lexi
 func (s *Service) String() string {
 	var out string
 	for _, w := range s.lexicon {
-		out += fmt.Sprintf("%v\n", w.Con)
+		out += fmt.Sprintf("%v\n", w.Austrian)
 	}
 
 	return out
@@ -148,8 +137,8 @@ func (s Service) Less(i, j int) bool {
 
 	// XXX stupid sorting, turns out this was the trick
 	// PolyGlot strips spaces out of words when sorting
-	runedI := []rune(strings.ReplaceAll(string(s.lexicon[i].Con), " ", ""))
-	runedJ := []rune(strings.ReplaceAll(string(s.lexicon[j].Con), " ", ""))
+	runedI := []rune(strings.ReplaceAll(string(s.lexicon[i].Austrian), " ", ""))
+	runedJ := []rune(strings.ReplaceAll(string(s.lexicon[j].Austrian), " ", ""))
 
 	check := len(runedI)
 	if len(runedI) > len(runedJ) {

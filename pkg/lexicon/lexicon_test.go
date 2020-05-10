@@ -29,47 +29,47 @@ func TestService_findConWords(t *testing.T) {
 			name: "test find nonfuzzy conword",
 			fields: fields{
 				lexicon:    Lexicon{
-					{Con:     "adgemoǆan"},
-					{Con:     "adhærents"},
-					{Con:     "ad i"},
-					{Con:     "ferbužan"},
-					{Con:     "ad"},
+					{Austrian: "adgemoǆan"},
+					{Austrian: "adhærents"},
+					{Austrian: "ad i"},
+					{Austrian: "ferbužan"},
+					{Austrian: "ad"},
 				},
 			},
 			args: args{
 				str: "ad",
-				st:  search.TypeConWord,
+				st:  search.TypeAustrianWord,
 				sp:  search.PatternNormal,
 			},
 			want: Lexicon{
-				{Con:     "adgemoǆan"},
-				{Con:     "adhærents"},
-				{Con:     "ad i"},
-				{Con:     "ad"},
+				{Austrian: "adgemoǆan"},
+				{Austrian: "adhærents"},
+				{Austrian: "ad i"},
+				{Austrian: "ad"},
 			},
 		},
 		{
 			name: "test find fuzzy conword",
 			fields: fields{
 				lexicon:    Lexicon{
-					{Con:     "adgemoǆan"},
-					{Con:     "adhærents"},
-					{Con:     "ad i"},
-					{Con:     "ferbužan"},
-					{Con:     "ad"},
+					{Austrian: "adgemoǆan"},
+					{Austrian: "adhærents"},
+					{Austrian: "ad i"},
+					{Austrian: "ferbužan"},
+					{Austrian: "ad"},
 				},
 			},
 			args: args{
 				str:   "a",
-				st:  search.TypeConWord,
+				st:  search.TypeAustrianWord,
 				sp:  search.PatternFuzzy,
 			},
 			want: Lexicon{
-				{Con:     "adgemoǆan"},
-				{Con:     "adhærents"},
-				{Con:     "ad i"},
-				{Con:     "ferbužan"},
-				{Con:     "ad"},
+				{Austrian: "adgemoǆan"},
+				{Austrian: "adhærents"},
+				{Austrian: "ad i"},
+				{Austrian: "ferbužan"},
+				{Austrian: "ad"},
 			},
 		},
 	}
@@ -126,8 +126,8 @@ func TestService_Less(t *testing.T) {
 			name: "test normal alphaorder sorting a < b",
 			fields: fields{
 				lexicon:    Lexicon{
-					{Con: "bužan"},
-					{Con: "ad"},
+					{Austrian: "bužan"},
+					{Austrian: "ad"},
 				},
 				alphaOrder: makeAlphaOrderMap("abdnuž"),
 			},
@@ -141,8 +141,8 @@ func TestService_Less(t *testing.T) {
 			name: "test normal alphaorder sorting smaller word later",
 			fields: fields{
 				lexicon:    Lexicon{
-					{Con: "ad"},
-					{Con: "ad i"},
+					{Austrian: "ad"},
+					{Austrian: "ad i"},
 				},
 				alphaOrder: makeAlphaOrderMap("adi"),
 			},
@@ -156,8 +156,8 @@ func TestService_Less(t *testing.T) {
 			name: "test normal alphaorder sorting same length with space goes later",
 			fields: fields{
 				lexicon:    Lexicon{
-					{Con: "ada"},
-					{Con: "ad i"},
+					{Austrian: "ada"},
+					{Austrian: "ad i"},
 				},
 				alphaOrder: makeAlphaOrderMap("adi"),
 			},
@@ -171,8 +171,8 @@ func TestService_Less(t *testing.T) {
 			name: "test normal alphaorder sorting larger word goes first if the substring is less",
 			fields: fields{
 				lexicon:    Lexicon{
-					{Con: "dusvimman"},
-					{Con: "dušks"},
+					{Austrian: "dusvimman"},
+					{Austrian: "dušks"},
 				},
 				alphaOrder: makeAlphaOrderMap("abimnsšuv"),
 			},
