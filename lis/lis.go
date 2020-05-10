@@ -15,25 +15,32 @@ import (
 var (
 	app      = kingpin.New("lisniks", "a reader for PolyGlot dictionaries")
 	dictFile = app.Arg("dictionary", "the dictionary to open").Required().String()
+
+	// Version gets injected with -ldflags
+	Version string
+	// BuildTime gets injected with -ldflags
+	BuildTime string
 )
 
 func main() {
+	app.Version(fmt.Sprintf("%v, build time: %v", Version, BuildTime))
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
 	dict := dictionary.NewDictFromFile(*dictFile)
 	s := state.State{
+		Version: Version,
 		Words:        dict.Lexicon.Words(),
 		SelectedWord: 0,
 		SearchPattern: search.PatternRegex,
 		SearchPatterns: map[search.Pattern]string{
-			search.PatternRegex:  "regex",
-			search.PatternRegexVC: "regex phonotactic",
+			search.PatternRegex:       search.PatternNames()[search.PatternRegex],
+			search.PatternPhonotactic: search.PatternNames()[search.PatternPhonotactic],
 		},
 		SearchType: search.TypeAustrianWord,
 		SearchTypes: map[search.Type]string{
-			search.TypeAustrianWord:   "austrian",
-			search.TypeEnglishWord:    "english",
-			search.TypeWordDefinition: "definition",
+			search.TypeAustrianWord:   search.TypeNames()[search.TypeAustrianWord],
+			search.TypeEnglishWord:    search.TypeNames()[search.TypeEnglishWord],
+			search.TypeWordDefinition: search.TypeNames()[search.TypeWordDefinition],
 		},
 		SearchQueue: search.NewQueue(50),
 		QueuePos: -1,

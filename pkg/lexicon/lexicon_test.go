@@ -25,53 +25,7 @@ func TestService_findConWords(t *testing.T) {
 		args   args
 		want   Lexicon
 	}{
-		{
-			name: "test find nonfuzzy conword",
-			fields: fields{
-				lexicon:    Lexicon{
-					{Austrian: "adgemoǆan"},
-					{Austrian: "adhærents"},
-					{Austrian: "ad i"},
-					{Austrian: "ferbužan"},
-					{Austrian: "ad"},
-				},
-			},
-			args: args{
-				str: "ad",
-				st:  search.TypeAustrianWord,
-				sp:  search.PatternNormal,
-			},
-			want: Lexicon{
-				{Austrian: "adgemoǆan"},
-				{Austrian: "adhærents"},
-				{Austrian: "ad i"},
-				{Austrian: "ad"},
-			},
-		},
-		{
-			name: "test find fuzzy conword",
-			fields: fields{
-				lexicon:    Lexicon{
-					{Austrian: "adgemoǆan"},
-					{Austrian: "adhærents"},
-					{Austrian: "ad i"},
-					{Austrian: "ferbužan"},
-					{Austrian: "ad"},
-				},
-			},
-			args: args{
-				str:   "a",
-				st:  search.TypeAustrianWord,
-				sp:  search.PatternFuzzy,
-			},
-			want: Lexicon{
-				{Austrian: "adgemoǆan"},
-				{Austrian: "adhærents"},
-				{Austrian: "ad i"},
-				{Austrian: "ferbužan"},
-				{Austrian: "ad"},
-			},
-		},
+		{},
 	}
 
 	for _, tt := range tests {
@@ -81,9 +35,7 @@ func TestService_findConWords(t *testing.T) {
 				alphaOrder: tt.fields.alphaOrder,
 			}
 
-			if got, err := s.FindWords(tt.args.str,
-				tt.args.sp,
-				tt.args.st); !reflect.DeepEqual(got, tt.want) {
+			if got, err := s.FindWords(tt.args.str); !reflect.DeepEqual(got, tt.want) {
 				if err != nil {
 					t.Errorf("FindWords() got err: %v", err)
 				}

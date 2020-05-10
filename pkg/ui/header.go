@@ -22,7 +22,7 @@ func (h *HeaderView) New(g *gocui.Gui, name string) error {
 			return err
 		}
 
-		_, err := fmt.Fprintln(v, langAndVersion)
+		_, err := fmt.Fprintln(v, fmt.Sprintf("%v 💛 lisniks %v", langAndVersion, h.state.Version))
 		_, err = fmt.Fprintln(v, stats)
 
 		if err != nil {

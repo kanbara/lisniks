@@ -9,11 +9,13 @@ DEPENDENCIES          := $(shell find ./vendor -type f)
 SYSTEM                := $(shell uname -s | tr A-Z a-z)_$(shell uname -m | sed "s/x86_64/amd64/")
 GOOS				?= darwin
 PROGAM               = lis
+VERSION               = $(shell git describe --always --tags --dirty)
+BUILD_TIME            = $(shell date +%FT%T%z)
 GOLANGCI_LINT_VERSION = 1.24.0
 
 $(BUILD_DIR)/%: %/*.go $(PKGFILES) $(DEPENDENCIES)
 	@echo Building $@
-	env GOOS=$(GOOS) $(GO) build -ldflags="-s -w -X main.BuildTime=$(BUILD_TIME)" -o $@ ./$(notdir $@)
+	env GOOS=$(GOOS) $(GO) build -ldflags="-s -w -X main.Version=$(VERSION) -X main.BuildTime=$(BUILD_TIME)" -o $@ ./$(notdir $@)
 
 .PHONY: build
 build: $(BINARY)
