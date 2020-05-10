@@ -17,8 +17,8 @@ type Service struct {
 	alphaOrder language.AlphaOrderMap
 }
 
-func (s *Service) GetByID(id int64) *word.Word {
-	for _, i := range s.lexicon {
+func (se *Service) GetByID(id int64) *word.Word {
+	for _, i := range se.lexicon {
 		if i.WordID == id {
 			return &i
 		}
@@ -27,19 +27,19 @@ func (s *Service) GetByID(id int64) *word.Word {
 	return nil
 }
 
-func (s *Service) Words() []word.Word {
-	return s.lexicon
+func (se *Service) Words() []word.Word {
+	return se.lexicon
 }
 
-func (s *Service) Count() int {
-	return len(s.lexicon)
+func (se *Service) Count() int {
+	return len(se.lexicon)
 }
 
-func (s *Service) At(index int) *word.Word {
-	return &s.lexicon[index]
+func (se *Service) At(index int) *word.Word {
+	return &se.lexicon[index]
 }
 
-func (s *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool, error) {
+func (se *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool, error) {
 	switch pattern {
 	case search.PatternRegex:
 		matched, err := regexp.Match(str, []byte(w.String()))
@@ -48,7 +48,7 @@ func (s *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool
 		}
 
 		return matched, nil
-	case search.PatternRegexVC:
+	case search.PatternPhonotactic:
 		// first substitute our C and V for the regex classes
 		str = strings.ReplaceAll(str, "V", search.RegexV)
 		str = strings.ReplaceAll(str, "C", search.RegexC)
@@ -71,42 +71,42 @@ func (s *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool
 // should be another type like `Filtered` which is still just a []*word.Word
 // and then all the searches are func (f *Filtered) ByFoo() *Filtered
 // todo can also return the time or status string here to display to the view
-func (s *Service) FindWords(str string, sp search.Pattern, st search.Type) (Lexicon, error) {
+func (se *Service) FindWords(str string) (Lexicon, error) {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
 	// or maybe rank queries with predecessor / successor
 	// and fuzzy search with binary search
 	var words []word.Word
 
-	for i := range s.lexicon {
-		switch st {
+	parsed, err := search.ParseString(str)
+	if err != nil {
+		return words, err
+	}
+
+	for i := range se.lexicon {
+		var r s.Rawstring
+		switch parsed.Type {
 		case search.TypeAustrianWord:
-			if match, err := s.found(str, s.lexicon[i].Austrian, sp); err != nil {
-				return nil, err
-			} else if match {
-				words = append(words, s.lexicon[i])
-			}
+			r = se.lexicon[i].Austrian
 		case search.TypeEnglishWord:
-			if match, err := s.found(str, s.lexicon[i].English, sp); err != nil {
-				return nil, err
-			} else if match {
-				words = append(words, s.lexicon[i])
-			}
+			r = se.lexicon[i].English
 		case search.TypeWordDefinition:
-			if match, err := s.found(str, s.lexicon[i].Def, sp); err != nil {
-				return nil, err
-			} else if match {
-				words = append(words, s.lexicon[i])
-			}
+			r = se.lexicon[i].Def
+		}
+
+		if match, err := se.found(parsed.String, r, parsed.Pattern); err != nil {
+			return nil, err
+		} else if match {
+			words = append(words, se.lexicon[i])
 		}
 	}
 
 	return words, nil
 }
 
-func (s *Service) String() string {
+func (se *Service) String() string {
 	var out string
-	for _, w := range s.lexicon {
+	for _, w := range se.lexicon {
 		out += fmt.Sprintf("%v\n", w.Austrian)
 	}
 
@@ -125,20 +125,20 @@ func NewLexiconService(lexicon Lexicon, alphaOrder language.AlphaOrderMap) *Serv
 // from the dictionary, e.g. -AaĀāæ...Žž
 // to ensure we order words the same as PolyGlot does
 
-func (s Service) Len() int {
-	return len(s.lexicon)
+func (se Service) Len() int {
+	return len(se.lexicon)
 }
 
-func (s Service) Swap(i, j int) {
-	s.lexicon[i], s.lexicon[j] = s.lexicon[j], s.lexicon[i]
+func (se Service) Swap(i, j int) {
+	se.lexicon[i], se.lexicon[j] = se.lexicon[j], se.lexicon[i]
 }
 
-func (s Service) Less(i, j int) bool {
+func (se Service) Less(i, j int) bool {
 
 	// XXX stupid sorting, turns out this was the trick
 	// PolyGlot strips spaces out of words when sorting
-	runedI := []rune(strings.ReplaceAll(string(s.lexicon[i].Austrian), " ", ""))
-	runedJ := []rune(strings.ReplaceAll(string(s.lexicon[j].Austrian), " ", ""))
+	runedI := []rune(strings.ReplaceAll(string(se.lexicon[i].Austrian), " ", ""))
+	runedJ := []rune(strings.ReplaceAll(string(se.lexicon[j].Austrian), " ", ""))
 
 	check := len(runedI)
 	if len(runedI) > len(runedJ) {
@@ -149,7 +149,7 @@ func (s Service) Less(i, j int) bool {
 		m := runedI[i]
 		n := runedJ[i]
 
-		diff := s.alphaOrder[m] - s.alphaOrder[n]
+		diff := se.alphaOrder[m] - se.alphaOrder[n]
 		switch {
 		case diff < 0: // letter comes first
 			return true

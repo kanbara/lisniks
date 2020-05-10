@@ -17,7 +17,7 @@ type State struct {
 	SearchType     search.Type
 	SearchTypes    map[search.Type]string
 	SearchQueue    search.Queue
-	CurrentSearch  search.Data
+	CurrentSearch  string
 	QueuePos       int
 }
 
