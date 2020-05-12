@@ -5,7 +5,9 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type CurrentWordView NoBindingsView
+type CurrentWordView struct {
+	DefaultView
+}
 
 func (c *CurrentWordView) New(g *gocui.Gui, name string) error {
 	if v, err := g.SetView(name, 0, 3, 20, 5, 0); err != nil {

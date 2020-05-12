@@ -6,7 +6,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type LexiconView DefaultView
+type LexiconView struct {
+	View
+}
 
 func (l *LexiconView) New(g *gocui.Gui, name string) error {
 	_, maxY := g.Size()

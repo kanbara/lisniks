@@ -7,7 +7,9 @@ import (
 	"github.com/kanbara/lisniks/pkg/search"
 )
 
-type SearchView DefaultView
+type SearchView struct {
+	View
+}
 
 func (s *SearchView) New(g *gocui.Gui, name string) error {
 

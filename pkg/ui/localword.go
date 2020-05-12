@@ -5,7 +5,9 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type LocalWordView NoBindingsView
+type LocalWordView struct {
+	DefaultView
+}
 
 func (l *LocalWordView) New(g *gocui.Gui, name string) error {
 

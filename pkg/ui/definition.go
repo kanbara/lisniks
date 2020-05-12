@@ -6,7 +6,9 @@ import (
 	"strings"
 )
 
-type DefinitionView NoBindingsView
+type DefinitionView struct {
+	DefaultView
+}
 
 const spaceWidth = 1
 

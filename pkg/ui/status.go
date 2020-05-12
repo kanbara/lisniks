@@ -5,7 +5,9 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type StatusView NoBindingsView
+type StatusView struct {
+	DefaultView
+}
 
 func (s *StatusView) New(g *gocui.Gui, name string) error {
 

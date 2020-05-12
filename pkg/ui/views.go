@@ -1,6 +1,8 @@
 package ui
 
-import "github.com/awesome-gocui/gocui"
+import (
+	"github.com/awesome-gocui/gocui"
+)
 
 const (
 	headerView      = "lang"
@@ -15,38 +17,24 @@ const (
 	debugView       = "debug"
 )
 
-type View interface {
-	SetKeybindings(g *gocui.Gui) error
+type ViewUpdateSetter interface {
 	New(g *gocui.Gui, name string) error
 	Update(v *gocui.View) error
+	SetKeybindings(g *gocui.Gui) error
 }
 
-type DefaultView struct {
+type View struct {
 	*Manager
 	viewsToUpdate []string
 }
 
-type NoBindingsOrUpdatesView struct {
+type DefaultView struct {
 	*Manager
-	*NilBindingsAndUpdates
 }
 
-type NoBindingsView struct {
-	*Manager
-	*NilBindings
-}
+func (d *DefaultView) Update(_ *gocui.View) error { return nil }
+func (d *DefaultView) SetKeybindings(_ *gocui.Gui) error { return nil }
 
-// convenience structs we can compose instead of having to copy and paste everywhere
-// annoying that we have to pass the instance of the struct, but i find it preferable
-// to having the functions written everywhere
-type NilBindingsAndUpdates struct{}
-
-func (n *NilBindingsAndUpdates) Update(_ *gocui.View) error        { return nil }
-func (n *NilBindingsAndUpdates) SetKeybindings(_ *gocui.Gui) error { return nil }
-
-type NilBindings struct{}
-
-func (n *NilBindings) SetKeybindings(_ *gocui.Gui) error { return nil }
 
 func toSearchView(g *gocui.Gui, _ *gocui.View) error {
 	g.Cursor = true

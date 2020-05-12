@@ -5,7 +5,9 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type PartOfSpeechView NoBindingsView
+type PartOfSpeechView struct {
+	DefaultView
+}
 
 func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
 

@@ -5,7 +5,9 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type HeaderView NoBindingsOrUpdatesView
+type HeaderView struct {
+	DefaultView
+}
 
 func (h *HeaderView) New(g *gocui.Gui, name string) error {
 	stats := h.dict.Stats()

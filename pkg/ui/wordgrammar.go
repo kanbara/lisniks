@@ -5,7 +5,9 @@ import (
 	"github.com/awesome-gocui/gocui"
 )
 
-type WordGrammarView NoBindingsView
+type WordGrammarView struct {
+	DefaultView
+}
 
 func (w *WordGrammarView) New(g *gocui.Gui, name string) error {
 
