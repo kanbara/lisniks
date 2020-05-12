@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"io"
 	"strings"
+	"sync"
 	"unicode/utf8"
 
 	"github.com/go-errors/errors"
@@ -34,19 +35,27 @@ var (
 // position.
 type View struct {
 	name           string
-	x0, y0, x1, y1 int // left top right bottom
-	ox, oy         int // view offsets
-	cx, cy         int // cursor position
-	rx, ry         int // Read() offsets
-	wx, wy         int // Write() offsets
-	lines          [][]cell
+	x0, y0, x1, y1 int      // left top right bottom
+	ox, oy         int      // view offsets
+	cx, cy         int      // cursor position
+	rx, ry         int      // Read() offsets
+	wx, wy         int      // Write() offsets
+	lines          [][]cell // All the data
 
-	readBuffer []byte // used for storing unreaded bytes
+	// readBuffer is used for storing unread bytes
+	readBuffer []byte
 
-	tainted   bool       // true if the viewLines must be updated
-	viewLines []viewLine // internal representation of the view's buffer
+	// tained is true if the viewLines must be updated
+	tainted bool
 
-	ei *escapeInterpreter // used to decode ESC sequences on Write
+	// internal representation of the view's buffer
+	viewLines []viewLine
+
+	// writeMutex protects locks the write process
+	writeMutex sync.Mutex
+
+	// ei is used to decode ESC sequences on Write
+	ei *escapeInterpreter
 
 	// Visible specifies whether the view is visible.
 	Visible bool
@@ -326,10 +335,10 @@ func (v *View) writeCells(x, y int, cells []cell) {
 // be called to clear the view's buffer.
 func (v *View) Write(p []byte) (n int, err error) {
 	v.tainted = true
-
-	// Fill with empty cells, if writing outside current view buffer
+	v.writeMutex.Lock()
 	v.makeWriteable(v.wx, v.wy)
 	v.writeRunes(bytes.Runes(p))
+	v.writeMutex.Unlock()
 
 	return len(p), nil
 }
@@ -461,6 +470,11 @@ func (v *View) Rewind() {
 	}
 }
 
+// IsTainted tells us if the view is tainted
+func (v *View) IsTainted() bool {
+	return v.tainted
+}
+
 // draw re-draws the view's contents.
 func (v *View) draw() error {
 	if !v.Visible {
@@ -575,11 +589,14 @@ func (v *View) realPosition(vx, vy int) (x, y int, err error) {
 // Clear empties the view's internal buffer.
 // And resets reading and writing offsets.
 func (v *View) Clear() {
+	v.writeMutex.Lock()
 	v.Rewind()
 	v.tainted = true
+	v.ei.reset()
 	v.lines = nil
 	v.viewLines = nil
 	v.clearRunes()
+	v.writeMutex.Unlock()
 }
 
 // clearRunes erases all the cells in the view.
@@ -623,8 +640,14 @@ func (v *View) ViewBufferLines() []string {
 	return lines
 }
 
+// LinesHeight is the count of view lines (i.e. lines excluding wrapping)
 func (v *View) LinesHeight() int {
 	return len(v.lines)
+}
+
+// ViewLinesHeight is the count of view lines (i.e. lines including wrapping)
+func (v *View) ViewLinesHeight() int {
+	return len(v.viewLines)
 }
 
 // ViewBuffer returns a string with the contents of the view's buffer that is
@@ -690,7 +713,7 @@ func indexFunc(r rune) bool {
 
 // SetLine changes the contents of an existing line.
 func (v *View) SetLine(y int, text string) error {
-	if y > len(v.lines) {
+	if y < 0 || y >= len(v.lines) {
 		err := ErrInvalidPoint
 		return err
 	}
@@ -708,7 +731,7 @@ func (v *View) SetLine(y int, text string) error {
 // SetHighlight toggles highlighting of separate lines, for custom lists
 // or multiple selection in views.
 func (v *View) SetHighlight(y int, on bool) error {
-	if y > len(v.lines) {
+	if y < 0 || y >= len(v.lines) {
 		err := ErrInvalidPoint
 		return err
 	}
