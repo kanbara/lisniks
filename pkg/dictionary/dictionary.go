@@ -74,7 +74,7 @@ func mustGetDictFileFromXML(filename string) *zip.File {
 		log.Fatalf("`%v` is not a zip, bailing", filename)
 	}
 
-	log.Infof("`%v` is zip; extracting dict XML", filename)
+	log.Debugf("`%v` is zip; extracting dict XML", filename)
 
 	rc, err := zip.OpenReader(filename)
 	if err != nil {
@@ -96,7 +96,7 @@ func mustGetDictFileFromXML(filename string) *zip.File {
 		os.Exit(1) // this code would never be reached, just here to calm the linter
 	}
 
-	log.Infof("found dictionary xml with %v bytes",
+	log.Debugf("found dictionary xml with %v bytes",
 		(datasize.ByteSize(dictFile.UncompressedSize64) * datasize.B).HumanReadable())
 
 	return dictFile
