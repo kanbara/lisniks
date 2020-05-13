@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.1.0] - 2020-05-13
 ### Added
 Modal window support
+
 Ctrl-R to reload dict
+
 Ctrl-C to quit now has modal
 
 Colours for various POS and Word Grammar classes (initial fooling around)
