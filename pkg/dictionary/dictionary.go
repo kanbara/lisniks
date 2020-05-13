@@ -18,6 +18,7 @@ import (
 const dictXMLName string = "pgdictionary.xml"
 
 type Dictionary struct {
+	filename string
 	file *File
 
 	PartsOfSpeech *partsofspeech.Service
@@ -26,12 +27,16 @@ type Dictionary struct {
 	Declensions   *declension.Service
 }
 
+func (d *Dictionary) Filename() string {
+	return d.filename
+}
+
 // NewDictFromFile will load the internal XML dictionary from a PolyGlot ZIP to a DictionaryFile struct in memory
 func NewDictFromFile(filename string) *Dictionary {
 	dictFile := mustGetDictFileFromXML(filename)
 	dict := mustUnmarshalXML(dictFile)
 
-	d := Dictionary{file: &dict}
+	d := Dictionary{file: &dict, filename: filename}
 	d.PartsOfSpeech = partsofspeech.NewPartsOfSpeechService(dict.PartsOfSpeech)
 	d.WordGrammar = wordgrammar.NewWordGrammarService(dict.WordGrammarClasses)
 

@@ -19,7 +19,6 @@ func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
 		}
 
 		v.Frame = false
-		v.FgColor = colour(int(p.state.CurrentWord().Type))
 		err := p.Update(v)
 		if err != nil {
 			return err
@@ -33,9 +32,9 @@ func (p *PartOfSpeechView) Update(v *gocui.View) error {
 	v.Clear()
 
 	if p.state.CurrentWord() != nil {
-		v.FgColor = colour(int(p.state.CurrentWord().Type))
+		pos := p.dict.PartsOfSpeech.Get(p.state.CurrentWord().Type)
+		_, err := fmt.Fprintln(v, posColour(pos, p.state.CurrentWord().Type))
 
-		_, err := fmt.Fprintln(v, p.dict.PartsOfSpeech.Get(p.state.CurrentWord().Type))
 		if err != nil {
 			return err
 		}

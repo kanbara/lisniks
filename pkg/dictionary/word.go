@@ -15,15 +15,23 @@ func (d *Dictionary) PrettyWordStringByLoc(loc int) string {
 	return d.PrettyWord(w)
 }
 
-func (d *Dictionary) HumanReadableWordClasses(wordType int64, classes []word.Class) string {
-	var out string
+type HumanClass struct {
+	Name string
+	Class word.Class
+}
+
+func (d *Dictionary) HumanReadableWordClasses(wordType int64, classes []word.Class) []HumanClass {
+	var out []HumanClass
 	for _, c := range classes {
 		val := d.WordGrammar.Get(wordType, c)
 		if val == nil {
 			continue
 		}
 
-		out += fmt.Sprintf("%v ", val.ValueName)
+		out = append(out, HumanClass{
+			Name: val.ValueName,
+			Class: c,
+		})
 	}
 
 	return out

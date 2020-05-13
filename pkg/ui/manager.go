@@ -60,18 +60,39 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 	return nil
 }
 
-func (m *Manager) updateStatusView(g *gocui.Gui) error {
-	g.Update(func(g *gocui.Gui) error {
-		if v, err := g.View(statusView); err != nil {
-			return err
-		} else {
-			if err := m.views[statusView].Update(v); err != nil {
+// used to send the `error` which quits the program
+func (m *Manager) quitmodal(g *gocui.Gui, _ *gocui.View) error {
+	m.AddModalView(g, "quit the program?", func(_ *gocui.Gui, _ *gocui.View) error {
+		return gocui.ErrQuit
+	}, modalQuit)
+
+	return nil
+}
+
+func (m *Manager) reloadmodal(g *gocui.Gui, _ *gocui.View) error {
+	m.AddModalView(g, "reload dictionary?", func(_ *gocui.Gui, v *gocui.View) error {
+
+		// replace state and dict
+		dict := dictionary.NewDictFromFile(m.dict.Filename())
+		s := state.NewState(m.state.Version, dict)
+
+		m.dict = dict
+		m.state = s
+
+		// update all views
+		for name := range m.views {
+			// this is THAT view by name (e.g. headerView itself) not this view
+			if viewsV, err := g.View(name); err != nil {
 				return err
+			} else {
+				if err := m.views[name].Update(viewsV); err != nil {
+					return err
+				}
 			}
 		}
 
 		return nil
-	})
+	}, modalReload)
 
 	return nil
 }

@@ -50,6 +50,21 @@ func toView(g *gocui.Gui, view string) error {
 	return nil
 }
 
+func (m *Manager) updateStatusView(g *gocui.Gui) error {
+	g.Update(func(g *gocui.Gui) error {
+		if v, err := g.View(statusView); err != nil {
+			return err
+		} else {
+			if err := m.views[statusView].Update(v); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return nil
+}
 //func (m *Manager) NextView(g *gocui.Gui, v *gocui.View) error {
 //	a.viewIndex = (a.viewIndex + 1) % len(VIEWS)
 //	return a.setView(g)

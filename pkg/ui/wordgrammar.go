@@ -37,9 +37,22 @@ func (w *WordGrammarView) Update(v *gocui.View) error {
 	v.Clear()
 
 	if w.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, w.dict.HumanReadableWordClasses(
+
+		var str string
+
+		// get all applicable human names and classes for this word
+		classes := w.dict.HumanReadableWordClasses(
 			w.state.CurrentWord().Type,
-			w.state.CurrentWord().Classes))
+			w.state.CurrentWord().Classes)
+
+		for i := 0; i < len(classes); i++ {
+			str += wordGrammarColour(classes[i].Name, classes[i].Class)
+			if i != len(classes) {
+				str += " "
+			}
+		}
+
+		_, err := fmt.Fprintln(v, str)
 		if err != nil {
 			return err
 		}

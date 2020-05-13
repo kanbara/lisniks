@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
-	"github.com/kanbara/lisniks/pkg/search"
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
 	log "github.com/sirupsen/logrus"
@@ -27,24 +26,7 @@ func main() {
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
 	dict := dictionary.NewDictFromFile(*dictFile)
-	s := state.State{
-		Version: Version,
-		Words:        dict.Lexicon.Words(),
-		SelectedWord: 0,
-		SearchPattern: search.PatternRegex,
-		SearchPatterns: map[search.Pattern]string{
-			search.PatternRegex:       search.PatternNames()[search.PatternRegex],
-			search.PatternPhonotactic: search.PatternNames()[search.PatternPhonotactic],
-		},
-		SearchType: search.TypeAustrianWord,
-		SearchTypes: map[search.Type]string{
-			search.TypeAustrianWord:   search.TypeNames()[search.TypeAustrianWord],
-			search.TypeEnglishWord:    search.TypeNames()[search.TypeEnglishWord],
-			search.TypeWordDefinition: search.TypeNames()[search.TypeWordDefinition],
-		},
-		SearchQueue: search.NewQueue(50),
-		QueuePos: -1,
-	}
+	s := state.NewState(Version, dict)
 
 	g, err := gocui.NewGui(gocui.Output256, false)
 	if err != nil {
@@ -53,7 +35,7 @@ func main() {
 
 	defer g.Close()
 
-	m := ui.NewManager(dict, &s)
+	m := ui.NewManager(dict, s)
 	g.SetManager(m)
 
 	err = m.SetGlobalKeybindings(g)

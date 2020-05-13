@@ -11,7 +11,7 @@ func (d *Dictionary) Stats() string {
 }
 
 func (d *Dictionary) LangAndVersion() string {
-	return fmt.Sprintf("%v - %v",
+	return fmt.Sprintf("%v %v",
 		d.file.LanguageProperties.Name, d.file.LanguageProperties.Version())
 
 }
