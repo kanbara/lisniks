@@ -2,6 +2,7 @@ package ui
 
 import (
 	"github.com/awesome-gocui/gocui"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -30,6 +31,7 @@ type View struct {
 
 type DefaultView struct {
 	*Manager
+	log *logrus.Logger
 }
 
 func (d *DefaultView) Update(_ *gocui.View) error { return nil }

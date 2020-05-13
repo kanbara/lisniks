@@ -8,7 +8,7 @@ import (
 	"github.com/kanbara/lisniks/pkg/lexicon"
 	"github.com/kanbara/lisniks/pkg/partsofspeech"
 	"github.com/kanbara/lisniks/pkg/wordgrammar"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"sort"
@@ -32,9 +32,9 @@ func (d *Dictionary) Filename() string {
 }
 
 // NewDictFromFile will load the internal XML dictionary from a PolyGlot ZIP to a DictionaryFile struct in memory
-func NewDictFromFile(filename string) *Dictionary {
-	dictFile := mustGetDictFileFromXML(filename)
-	dict := mustUnmarshalXML(dictFile)
+func NewDictFromFile(filename string, log *logrus.Logger) *Dictionary {
+	dictFile := mustGetDictFileFromXML(filename, log)
+	dict := mustUnmarshalXML(dictFile, log)
 
 	d := Dictionary{file: &dict, filename: filename}
 	d.PartsOfSpeech = partsofspeech.NewPartsOfSpeechService(dict.PartsOfSpeech)
@@ -50,7 +50,7 @@ func NewDictFromFile(filename string) *Dictionary {
 
 // mustUnmarshalXML takes a file from the zip and unmarshals it to a go dictionary.File structure
 // or exists on error
-func mustUnmarshalXML(dictFile *zip.File) File {
+func mustUnmarshalXML(dictFile *zip.File, log *logrus.Logger) File {
 	// get a reader for the dictionary file
 	dictRC, err := dictFile.Open()
 	if err != nil {
@@ -73,8 +73,8 @@ func mustUnmarshalXML(dictFile *zip.File) File {
 }
 
 // mustGetDictFileFromXML takes a filename and returns a zip or exits on error
-func mustGetDictFileFromXML(filename string) *zip.File {
-	ok := isZip(filename)
+func mustGetDictFileFromXML(filename string, log *logrus.Logger) *zip.File {
+	ok := isZip(filename, log)
 	if !ok {
 		log.Fatalf("`%v` is not a zip, bailing", filename)
 	}
@@ -110,7 +110,7 @@ func mustGetDictFileFromXML(filename string) *zip.File {
 // isZip determines if a file is reasonably a zip or not.
 // we don't really need this, because i am sure zip.OpenReader will error otherwise
 // but it can't hurt i suppose
-func isZip(fileName string) bool {
+func isZip(fileName string, log *logrus.Logger) bool {
 	z, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Error(err)

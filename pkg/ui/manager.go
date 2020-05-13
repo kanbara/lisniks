@@ -4,16 +4,18 @@ import (
 	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	"github.com/kanbara/lisniks/pkg/state"
+	"github.com/sirupsen/logrus"
 )
 
 type Manager struct {
 	dict  *dictionary.Dictionary
 	state *state.State
 	views map[string]ViewUpdateSetter
+	log   *logrus.Logger
 }
 
-func NewManager(dict *dictionary.Dictionary, state *state.State) *Manager {
-	return &Manager{dict: dict, state: state}
+func NewManager(dict *dictionary.Dictionary, state *state.State, log *logrus.Logger) *Manager {
+	return &Manager{dict: dict, state: state, log: log}
 }
 
 func (m *Manager) Layout(g *gocui.Gui) error {
@@ -21,7 +23,7 @@ func (m *Manager) Layout(g *gocui.Gui) error {
 
 		// we can share this as a singleton as these functions are all nil
 		// and all the updates are thread safe anyway
-		dv := DefaultView{m}
+		dv := DefaultView{m, m.log}
 
 		m.views = map[string]ViewUpdateSetter{
 			headerView: &HeaderView{dv},
@@ -73,7 +75,7 @@ func (m *Manager) reloadmodal(g *gocui.Gui, _ *gocui.View) error {
 	m.AddModalView(g, "reload dictionary?", func(_ *gocui.Gui, v *gocui.View) error {
 
 		// replace state and dict
-		dict := dictionary.NewDictFromFile(m.dict.Filename())
+		dict := dictionary.NewDictFromFile(m.dict.Filename(), m.log)
 		s := state.NewState(m.state.Version, dict)
 
 		m.dict = dict

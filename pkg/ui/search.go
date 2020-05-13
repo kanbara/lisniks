@@ -107,7 +107,7 @@ func (s *SearchView) updateTitle(v *gocui.View, t search.Type, p search.Pattern)
 		s.state.SearchPatterns[p])
 }
 
-func (s *SearchView) moveQueue(g *gocui.Gui, v *gocui.View, move int) error {
+func (s *SearchView) moveQueue(_ *gocui.Gui, v *gocui.View, move int) error {
 	// ensure we have a queue to search through
 	if s.state.SearchQueue.Len() == 0 {
 		return nil

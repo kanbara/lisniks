@@ -6,14 +6,17 @@ import (
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
-	log "github.com/sirupsen/logrus"
+	 "github.com/sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v2"
+	"io/ioutil"
+	"log"
 	"os"
 )
 
 var (
 	app      = kingpin.New("lisniks", "a reader for PolyGlot dictionaries")
 	dictFile = app.Arg("dictionary", "the dictionary to open").Required().String()
+	debug    = app.Flag("debug", "debug").Short('d').Bool()
 
 	// Version gets injected with -ldflags
 	Version string
@@ -21,11 +24,27 @@ var (
 	BuildTime string
 )
 
+func newLogger(debug bool) *logrus.Logger {
+	logger := logrus.New()
+	if debug {
+		logger.SetLevel(logrus.DebugLevel)
+		file, _ := os.OpenFile("debug.log",
+			os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+		logger.SetOutput(file)
+		return logger
+	}
+
+	logger.SetOutput(ioutil.Discard)
+	return logger
+}
+
 func main() {
 	app.Version(fmt.Sprintf("%v, build time: %v", Version, BuildTime))
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	dict := dictionary.NewDictFromFile(*dictFile)
+	logger := newLogger(*debug)
+	dict := dictionary.NewDictFromFile(*dictFile, logger)
 	s := state.NewState(Version, dict)
 
 	g, err := gocui.NewGui(gocui.Output256, false)
@@ -35,7 +54,7 @@ func main() {
 
 	defer g.Close()
 
-	m := ui.NewManager(dict, s)
+	m := ui.NewManager(dict, s, logger)
 	g.SetManager(m)
 
 	err = m.SetGlobalKeybindings(g)

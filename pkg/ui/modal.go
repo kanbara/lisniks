@@ -32,7 +32,7 @@ func (m *Manager) AddModalView(g *gocui.Gui,
 	action func(g *gocui.Gui, v *gocui.View) error,
 	mt modalType) { // TODO add keybinding here to blacklist and whitelist after
 	g.Update(func(g *gocui.Gui) error {
-		mv := ModalView{DefaultView: DefaultView{m},
+		mv := ModalView{DefaultView: DefaultView{m, m.log},
 			text:   text,
 			action: action,
 			mt:     mt}
