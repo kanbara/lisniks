@@ -9,8 +9,8 @@ import (
 type modalType string
 
 const (
-	modalQuit   modalType = "quit"
-	modalReload           = "reload"
+	ModalQuit   modalType = "quit"
+	ModalReload           = "reload"
 )
 
 func modalName(mt modalType) string {
@@ -27,12 +27,13 @@ type ModalView struct {
 	frameTitleColour gocui.Attribute
 }
 
-func (m *Manager) AddModalView(g *gocui.Gui,
+func AddModalView(g *gocui.Gui,
+	v *ViewManager,
 	text string,
 	action func(g *gocui.Gui, v *gocui.View) error,
 	mt modalType) { // TODO add keybinding here to blacklist and whitelist after
 	g.Update(func(g *gocui.Gui) error {
-		mv := ModalView{DefaultView: DefaultView{m, m.log},
+		mv := ModalView{DefaultView: DefaultView{v},
 			text:   text,
 			action: action,
 			mt:     mt}
@@ -87,10 +88,10 @@ func (m *ModalView) New(g *gocui.Gui, name string) error {
 		}
 
 		opText := fmt.Sprintf("%v or %v",
-			applyColour(Green, "[ENTER] Yes", ansibold),
-			applyColour(Red, "[ESC] Cancel", ansibold))
+			ApplyColour(Green, "[ENTER] Yes", ANSIBold),
+			ApplyColour(Red, "[ESC] Cancel", ANSIBold))
 
-		l := (x - len(stripANSI(opText)))/2
+		l := (x - len(StripANSI(opText)))/2
 		if l <= 0 {
 			l = 0
 		}

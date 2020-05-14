@@ -31,43 +31,44 @@ func (s *SearchView) New(g *gocui.Gui, name string) error {
 
 func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
-	s.state.QueuePos = -1
-	s.state.CurrentSearch = ""
+	s.State.QueuePos = -1
+	s.State.CurrentSearch = ""
 
 	var newWords lexicon.Lexicon
 	word, err := v.Line(0)
 	if err != nil {
-		newWords = s.dict.Lexicon.Words()
-		s.state.StatusText = fmt.Sprintf("")
+		newWords = s.Dict.Lexicon.Words()
+		s.State.StatusText = fmt.Sprintf("")
 	} else {
-		newWords, err = s.dict.Lexicon.FindWords(word)
+		newWords, err = s.Dict.Lexicon.FindWords(word)
 		if err != nil {
-			s.state.StatusText = fmt.Sprintf("%v", err)
-			if err := s.updateStatusView(g); err != nil {
+			s.State.StatusText = fmt.Sprintf("%v", err)
+			if err := s.UpdateStatusView(g); err != nil {
 				return err
 			}
 
-			return toView(g, lexView)
+			// TODO refactor this as a handler for viewPopped
+			return ToView(g, LexViewName)
 		}
 
 		if err := v.SetCursor(0, 0); err != nil {
 			return err
 		}
 
-		s.state.SearchQueue.Enqueue(word)
-		s.state.StatusText = fmt.Sprintf("search for «%v» found %v words",
+		s.State.SearchQueue.Enqueue(word)
+		s.State.StatusText = fmt.Sprintf("search for «%v» found %v words",
 			word, len(newWords))
 	}
 
-	s.state.Words = newWords
+	s.State.Words = newWords
 	v.Clear()
 	g.Update(func(g *gocui.Gui) error {
 
-		for _, viewName := range s.viewsToUpdate {
+		for _, viewName := range s.ViewsToUpdate {
 			if v, err := g.View(viewName); err != nil {
 				return err
 			} else {
-				if err := s.views[viewName].Update(v); err != nil {
+				if err := s.Views[viewName].Update(v); err != nil {
 					return err
 				}
 			}
@@ -76,21 +77,21 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 		return nil
 	})
 
-	return toView(g, lexView)
+	return ToView(g, LexViewName)
 }
 
 func (s *SearchView) Update(_ *gocui.View) error { return nil }
 
 func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
-	s.state.QueuePos = -1
-	s.state.CurrentSearch = ""
+	s.State.QueuePos = -1
+	s.State.CurrentSearch = ""
 
 	v.Clear()
 	s.updateTitle(v, search.TypeAustrianWord, search.PatternRegex)
-	s.state.StatusText = "search canceled"
+	s.State.StatusText = "search canceled"
 
-	if err := s.Manager.updateStatusView(g); err != nil {
+	if err := s.UpdateStatusView(g); err != nil {
 		return err
 	}
 
@@ -98,37 +99,39 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
-	return toView(g, lexView)
+	return ToView(g, LexViewName)
 }
 
 func (s *SearchView) updateTitle(v *gocui.View, t search.Type, p search.Pattern) {
-	v.Title = fmt.Sprintf("search %v %v",
-		s.state.SearchTypes[t],
-		s.state.SearchPatterns[p])
+	title := fmt.Sprintf("search %v %v",
+		s.State.SearchTypes[t],
+		s.State.SearchPatterns[p])
+
+	v.Title = title
 }
 
 func (s *SearchView) moveQueue(_ *gocui.Gui, v *gocui.View, move int) error {
 	// ensure we have a queue to search through
-	if s.state.SearchQueue.Len() == 0 {
+	if s.State.SearchQueue.Len() == 0 {
 		return nil
 	}
 
-	if s.state.QueuePos == -1 {
+	if s.State.QueuePos == -1 {
 		word, err := v.Line(0)
 		if err != gocui.ErrInvalidPoint && word != "" {
-			s.state.CurrentSearch = word
+			s.State.CurrentSearch = word
 		}
 	}
 
 	// set bounds appropriately so we don't go over or under the valid positions
-	if s.state.QueuePos+move >= s.state.SearchQueue.Len() {
+	if s.State.QueuePos+move >= s.State.SearchQueue.Len() {
 		return nil
 	}
 
-	if s.state.QueuePos+move < 0 {
+	if s.State.QueuePos+move < 0 {
 		// pop the current search back and set the queue pos so we can save the state again
 
-		s.state.QueuePos = -1
+		s.State.QueuePos = -1
 		v.Clear()
 		// write the word at 0,0, not where the cursor was before
 		if err := v.SetWritePos(0, 0); err != nil {
@@ -136,14 +139,14 @@ func (s *SearchView) moveQueue(_ *gocui.Gui, v *gocui.View, move int) error {
 		}
 
 		// []rune is needed here, or else we get the wrong string len with >1 byte chars!
-		if err := v.SetCursor(len([]rune(s.state.CurrentSearch)), 0); err != nil {
+		if err := v.SetCursor(len([]rune(s.State.CurrentSearch)), 0); err != nil {
 			return err
 		}
 
 		// write the word, and also pop the current search states so that we
 		// end up making the correct search
-		v.WriteString(s.state.CurrentSearch)
-		parsed, err := search.ParseString(s.state.CurrentSearch)
+		v.WriteString(s.State.CurrentSearch)
+		parsed, err := search.ParseString(s.State.CurrentSearch)
 		if err == nil {
 			s.updateTitle(v, parsed.Type, parsed.Pattern)
 		}
@@ -152,10 +155,10 @@ func (s *SearchView) moveQueue(_ *gocui.Gui, v *gocui.View, move int) error {
 	}
 
 	// advance the queue position
-	s.state.QueuePos = s.state.QueuePos + move
+	s.State.QueuePos = s.State.QueuePos + move
 
 	// if we have a word in the queue at this index
-	if peek := s.state.SearchQueue.Peek(s.state.QueuePos); peek != nil {
+	if peek := s.State.SearchQueue.Peek(s.State.QueuePos); peek != nil {
 		v.Clear()
 
 		p := *peek
@@ -227,31 +230,31 @@ func (s *SearchView) delete(_ *gocui.Gui, v *gocui.View) error {
 }
 
 func (s *SearchView) SetKeybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding(searchView, gocui.KeyEsc, gocui.ModNone, s.cancelToLexView); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyEsc, gocui.ModNone, s.cancelToLexView); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(searchView, gocui.KeyEnter, gocui.ModNone, s.execSearch); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyEnter, gocui.ModNone, s.execSearch); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(searchView, gocui.KeyArrowUp, gocui.ModNone, s.queueUp); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyArrowUp, gocui.ModNone, s.queueUp); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(searchView, gocui.KeyArrowDown, gocui.ModNone, s.queueDown); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyArrowDown, gocui.ModNone, s.queueDown); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(searchView, gocui.KeyCtrlA, gocui.ModNone, s.moveLeft); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyCtrlA, gocui.ModNone, s.moveLeft); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(searchView, gocui.KeyCtrlE, gocui.ModNone, s.moveRight); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyCtrlE, gocui.ModNone, s.moveRight); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(searchView, gocui.KeyCtrlW, gocui.ModNone, s.delete); err != nil {
+	if err := g.SetKeybinding(SearchViewName, gocui.KeyCtrlW, gocui.ModNone, s.delete); err != nil {
 		return err
 	}
 

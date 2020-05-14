@@ -31,9 +31,9 @@ func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
 func (p *PartOfSpeechView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if p.state.CurrentWord() != nil {
-		pos := p.dict.PartsOfSpeech.Get(p.state.CurrentWord().Type)
-		_, err := fmt.Fprintln(v, posColour(pos, p.state.CurrentWord().Type))
+	if p.State.CurrentWord() != nil {
+		pos := p.Dict.PartsOfSpeech.GetByID(p.State.CurrentWord().Type)
+		_, err := fmt.Fprintln(v, POSColour(pos, p.State.CurrentWord().Type))
 
 		if err != nil {
 			return err

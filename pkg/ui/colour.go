@@ -13,9 +13,9 @@ const light = 10
 
 // TODO could use inverted too
 const (
-	ansibold   int = 1
-	ansiunder  int = 4
-	ansiinvert int = 7
+	ANSIBold   int = 1
+	ANSIUnder  int = 4
+	ANSIInvert int = 7
 )
 
 const (
@@ -35,22 +35,22 @@ const (
 	terminator     string = "\033[0m"
 )
 
-func stripANSI(str string) string {
+func StripANSI(str string) string {
 	re := regexp.MustCompile(`\033\[[[:digit:]]+;?[[:digit:]]*m`)
 	return string(re.ReplaceAll([]byte(str), []byte("")))
 }
 
-func applyColour(c ansicolour, str string, style int) string {
+func ApplyColour(c ansicolour, str string, style int) string {
 
 	switch style {
-	case ansibold:
+	case ANSIBold:
 		b := fmt.Sprintf(beginner, c)
 		if c > LightGrey { // last colour value before brights
 			c -= light
 			b = fmt.Sprintf(beginnerStyled, c, style)
 		}
 		return b + str + terminator
-	case ansiinvert, ansiunder:
+	case ANSIInvert, ANSIUnder:
 		b := fmt.Sprintf(beginnerStyled, c, style)
 		return b + str + terminator
 	}
@@ -122,25 +122,25 @@ func staticPOSMap() map[int64]ansicolour {
 }
 
 // TODO find a better spot / way to do or supply this (e.g. could be a file)
-func wordGrammarColour(str string, wg word.Class) string {
+func WordGrammarColour(str string, wg word.Class) string {
 
 	colour, ok := staticWordClassMap()[wg]
 	if !ok {
 		// colour was not found, return normal
-		return applyColour(LightGrey, str, ansibold)
+		return ApplyColour(LightGrey, str, ANSIBold)
 	}
 
-	return applyColour(colour, str, ansibold)
+	return ApplyColour(colour, str, ANSIBold)
 }
 
 // TODO find a better spot / way to do or supply this (e.g. could be a file)
-func posColour(str string, pos int64) string {
+func POSColour(str string, pos int64) string {
 
 	colour, ok := staticPOSMap()[pos]
 	if !ok {
 		// colour was not found, return white
-		return applyColour(LightGrey, str, ansiunder)
+		return ApplyColour(LightGrey, str, ANSIUnder)
 	}
 
-	return applyColour(colour, str, ansiunder)
+	return ApplyColour(colour, str, ANSIUnder)
 }

@@ -461,7 +461,7 @@ func Test_updateViewCursorOriginAndState(t *testing.T) {
 				c: coords{
 					// disregard all x coords (for now?)
 					cursorPos:   coordinates{y: 28},
-					originStart: coordinates{y: 0}, // +++++
+					originStart: coordinates{y: 0},  // +++++
 					viewSize:    coordinates{y: 29}, // -----
 				},
 				updown:   1, // *

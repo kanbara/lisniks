@@ -27,13 +27,13 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 		//
 		// i saw an issue on the thing about unicode, maybe there's a fix
 		// that can be done.
-		v.Title = fmt.Sprintf("%v %v/%v",name, len(l.state.Words), l.dict.Lexicon.Len())
+		v.Title = fmt.Sprintf("%v %v/%v",name, len(l.State.Words), l.Dict.Lexicon.Len())
 		v.Frame = true
 		v.Highlight = true
 		v.SelFgColor = gocui.ColorGreen
 		v.FgColor = gocui.ColorWhite
 
-		for _, w := range l.state.Words {
+		for _, w := range l.State.Words {
 			_, err := fmt.Fprintln(v, w.Austrian)
 			if err != nil {
 				return err
@@ -50,7 +50,7 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 			return err
 		}
 
-		err = v.SetHighlight(l.state.SelectedWord, true)
+		err = v.SetHighlight(l.State.SelectedWord, true)
 		if err != nil {
 			return err
 		}
@@ -61,11 +61,11 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 
 func (l *LexiconView) Update(v *gocui.View) error {
 	v.Clear()
-	l.state.SelectedWord = 0
-	v.Title = fmt.Sprintf("%v %v/%v", lexView, len(l.state.Words), l.dict.Lexicon.Len())
+	l.State.SelectedWord = 0
+	v.Title = fmt.Sprintf("%v %v/%v", LexViewName, len(l.State.Words), l.Dict.Lexicon.Len())
 
-	if len(l.state.Words) > 0 {
-		for _, w := range l.state.Words {
+	if len(l.State.Words) > 0 {
+		for _, w := range l.State.Words {
 			_, err := fmt.Fprintln(v, w.Austrian)
 			if err != nil {
 				return err
@@ -92,19 +92,19 @@ func (l *LexiconView) Update(v *gocui.View) error {
 }
 
 func (l *LexiconView) SetKeybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding(lexView, gocui.KeyArrowDown, gocui.ModNone, l.NextWord); err != nil {
+	if err := g.SetKeybinding(LexViewName, gocui.KeyArrowDown, gocui.ModNone, l.NextWord); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(lexView, gocui.KeyArrowUp, gocui.ModNone, l.prevWord); err != nil {
+	if err := g.SetKeybinding(LexViewName, gocui.KeyArrowUp, gocui.ModNone, l.prevWord); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(lexView, gocui.KeyCtrlF, gocui.ModNone, l.nextWordJump); err != nil {
+	if err := g.SetKeybinding(LexViewName, gocui.KeyCtrlF, gocui.ModNone, l.nextWordJump); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(lexView, gocui.KeyCtrlB, gocui.ModNone, l.prevWordJump); err != nil {
+	if err := g.SetKeybinding(LexViewName, gocui.KeyCtrlB, gocui.ModNone, l.prevWordJump); err != nil {
 		return err
 	}
 
@@ -112,7 +112,7 @@ func (l *LexiconView) SetKeybindings(g *gocui.Gui) error {
 }
 
 func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error {
-	if len(l.state.Words) == 0 {
+	if len(l.State.Words) == 0 {
 		return nil
 	}
 
@@ -120,7 +120,7 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 	cx, cy := v.Cursor()
 
 	// we can't go above len words
-	maxY := len(l.state.Words) - 1
+	maxY := len(l.State.Words) - 1
 
 	// the position of the buffer in the viewSize
 	ox, oy := v.Origin()
@@ -146,7 +146,7 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 	// cursorPos == highlight in this case
 
 	// turn off highlight for previous words
-	err := v.SetHighlight(l.state.SelectedWord, false)
+	err := v.SetHighlight(l.State.SelectedWord, false)
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 		cursorPos:   coordinates{cx, cy},
 		originStart: coordinates{ox, oy},
 		viewSize:    coordinates{vx, vy},
-	}, updown, l.state.SelectedWord, 0, maxY)
+	}, updown, l.State.SelectedWord, 0, maxY)
 
 	err = v.SetCursor(c.cursorPos.x, c.cursorPos.y)
 	if err != nil {
@@ -177,20 +177,20 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 		return err
 	}
 
-	l.state.SelectedWord = sel
+	l.State.SelectedWord = sel
 
 	// highlight current word
-	err = v.SetHighlight(l.state.SelectedWord, true)
+	err = v.SetHighlight(l.State.SelectedWord, true)
 	if err != nil {
 		return err
 	}
 
 	g.Update(func(g *gocui.Gui) error {
-		for _, viewName := range l.viewsToUpdate {
+		for _, viewName := range l.ViewsToUpdate {
 			if v, err := g.View(viewName); err != nil {
 				return err
 			} else {
-				if err := l.views[viewName].Update(v); err != nil {
+				if err := l.Views[viewName].Update(v); err != nil {
 					return err
 				}
 			}
@@ -297,8 +297,8 @@ func (l *LexiconView) jump(g *gocui.Gui, v *gocui.View, ahead bool) error {
 	// if there's not so many words, make a smaller jump
 	// e.g. with word length less than one frame, so that we can
 	// jump inside of a smaller list
-	if vy > len(l.state.Words) {
-		jump = len(l.state.Words) / 2
+	if vy > len(l.State.Words) {
+		jump = len(l.State.Words) / 2
 	} else {
 		jump = vy
 	}

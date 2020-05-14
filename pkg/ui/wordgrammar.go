@@ -36,17 +36,17 @@ func (w *WordGrammarView) New(g *gocui.Gui, name string) error {
 func (w *WordGrammarView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if w.state.CurrentWord() != nil {
+	if w.State.CurrentWord() != nil {
 
 		var str string
 
 		// get all applicable human names and classes for this word
-		classes := w.dict.HumanReadableWordClasses(
-			w.state.CurrentWord().Type,
-			w.state.CurrentWord().Classes)
+		classes := w.Dict.HumanReadableWordClasses(
+			w.State.CurrentWord().Type,
+			w.State.CurrentWord().Classes)
 
 		for i := 0; i < len(classes); i++ {
-			str += wordGrammarColour(classes[i].Name, classes[i].Class)
+			str += WordGrammarColour(classes[i].Name, classes[i].Class)
 			if i != len(classes) {
 				str += " "
 			}

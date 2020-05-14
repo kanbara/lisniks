@@ -147,13 +147,13 @@ func ParseString(str string) (Parsed, error) {
 
 	splits := strings.Split(str, "/")
 	switch len(splits) {
-	case 1:
+	case 1: // just a regex, e.g. ^.*ǆa$
 		return Parsed{
 			Type:    TypeAustrianWord,
 			Pattern: PatternRegex,
 			String:  str,
 		}, nil
-	case 2:
+	case 2: // a type+pattern and regex, e.g. e/^.*ǆa$
 		t, p, err := parseTypeAndPattern(splits[0])
 		return Parsed{
 			Type:    t,

@@ -40,9 +40,9 @@ func (d *DefinitionView) Update(v *gocui.View) error {
 	v.Clear()
 
 	x, _ := v.Size()
-	if d.state.CurrentWord() != nil {
+	if d.State.CurrentWord() != nil {
 		//fmt.Printf(fmt.Sprintf("\n\n\n\n%q", d.state.CurrentWord().Def.String()))
-		modified := wordWrap(d.state.CurrentWord().Def.String(), x-1)
+		modified := wordWrap(d.State.CurrentWord().Def.String(), x-1)
 				_, err := fmt.Fprintln(v, modified)
 				if err != nil {
 					return err

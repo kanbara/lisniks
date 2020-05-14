@@ -31,7 +31,7 @@ func (s *StatusView) New(g *gocui.Gui, name string) error {
 func (s *StatusView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if _, err := fmt.Fprintln(v, s.state.StatusText); err != nil {
+	if _, err := fmt.Fprintln(v, s.State.StatusText); err != nil {
 		return err
 	}
 

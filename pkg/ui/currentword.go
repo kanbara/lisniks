@@ -30,8 +30,8 @@ func (c *CurrentWordView) New(g *gocui.Gui, name string) error {
 func (c *CurrentWordView) Update(v *gocui.View) error {
 	v.Clear()
 
-	if c.state.CurrentWord() != nil {
-		_, err := fmt.Fprintln(v, c.state.CurrentWord().Austrian)
+	if c.State.CurrentWord() != nil {
+		_, err := fmt.Fprintln(v, c.State.CurrentWord().Austrian)
 		if err != nil {
 			return err
 		}

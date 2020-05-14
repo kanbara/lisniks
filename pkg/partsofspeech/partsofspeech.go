@@ -6,6 +6,7 @@ import (
 
 type Service struct {
 	posMap Map
+	reversePosMap ReverseMap
 }
 
 type PartsOfSpeech []Part
@@ -17,19 +18,27 @@ type Part struct {
 }
 
 type Map map[int64]string
+type ReverseMap map[string]int64
 
-func (s *Service) Get(id int64) string {
+func (s *Service) GetByID(id int64) string {
 	return s.posMap[id]
+}
+
+func (s *Service) GetByName(str string) int64 {
+	return s.reversePosMap[str]
 }
 
 func NewPartsOfSpeechService(pos PartsOfSpeech) *Service {
 
 	m := make(Map, len(pos))
+	rm := make(ReverseMap, len(pos))
+
 
 	for _, p := range pos {
 		m[p.ID] = p.Name
+		rm[p.Name] = p.ID
 	}
 
-	s := Service{posMap: m}
+	s := Service{posMap: m, reversePosMap: rm}
 	return &s
 }

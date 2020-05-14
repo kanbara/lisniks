@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/awesome-gocui/gocui"
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	"github.com/kanbara/lisniks/pkg/state"
 	"github.com/kanbara/lisniks/pkg/ui"
-	 "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -47,36 +45,9 @@ func main() {
 	dict := dictionary.NewDictFromFile(*dictFile, logger)
 	s := state.NewState(Version, dict)
 
-	g, err := gocui.NewGui(gocui.Output256, false)
-	if err != nil {
-		log.Panicf("could not instantiate UI: %v", err)
+	vm := ui.NewViewManager(dict, s, logger)
+	if err := vm.Run(); err != nil {
+		logger.Panicf("error on main runloop: %v", err)
 	}
 
-	defer g.Close()
-
-	m := ui.NewManager(dict, s, logger)
-	g.SetManager(m)
-
-	err = m.SetGlobalKeybindings(g)
-	if err != nil {
-		log.Panicf("Could not set keybinding: %v", err)
-	}
-
-	g.Highlight = true
-	g.SelFgColor = gocui.ColorGreen
-	g.SelFrameColor = gocui.ColorGreen
-
-	if err := g.MainLoop(); err != nil && !gocui.IsQuit(err) {
-		// debug stuff if we crash sometimes
-		// not sure if useful but oh well
-		view := g.CurrentView()
-		ox, oy := view.Origin()
-		vx, vy := view.Size()
-		cx, cy := view.Cursor()
-		cur, err := view.Line(cy)
-		p := fmt.Sprintf("%v\nselected: %v\nview: %v\nview origin: %v,%v\n"+
-			"view size: %v, %v\nview cursor: %v,%v\nlexicion list: %v\nbuf: `%v`",
-			err, s.SelectedWord, view.Name(), ox, oy, vx, vy, cx, cy, len(s.Words), cur)
-		panic(p)
-	}
 }

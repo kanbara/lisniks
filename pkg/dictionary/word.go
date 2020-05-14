@@ -41,7 +41,7 @@ func (d *Dictionary) PrettyWord(w *word.Word) string {
 	return fmt.Sprintf("%v (%v) [%v] #%v\n%v\n\tdef: %v\n",
 		w.Austrian,
 		w.English,
-		d.PartsOfSpeech.Get(w.Type),
+		d.PartsOfSpeech.GetByID(w.Type),
 		w.WordID,
 		d.HumanReadableWordClasses(w.Type, w.Classes),
 		w.Def)
