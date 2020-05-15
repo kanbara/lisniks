@@ -15,6 +15,25 @@ type View struct {
 	ViewsToUpdate []string
 }
 
+func (vw *View) UpdateViews(g *gocui.Gui) {
+	vw.State.SelectedWord = 0
+
+	g.Update(func(g *gocui.Gui) error {
+
+		for _, viewName := range vw.ViewsToUpdate {
+			if v, err := g.View(viewName); err != nil {
+				return err
+			} else {
+				if err := vw.Views[viewName].Update(v); err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	})
+}
+
 type ListView struct {
 	View
 }
@@ -23,7 +42,7 @@ type DefaultView struct {
 	*ViewManager
 }
 
-func (d *DefaultView) Update(_ *gocui.View) error { return nil }
+func (d *DefaultView) Update(_ *gocui.View) error        { return nil }
 func (d *DefaultView) SetKeybindings(_ *gocui.Gui) error { return nil }
 
 //func (m *Manager) NextView(g *gocui.Gui, v *gocui.View) error {

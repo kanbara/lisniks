@@ -61,7 +61,6 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 
 func (l *LexiconView) Update(v *gocui.View) error {
 	v.Clear()
-	l.State.SelectedWord = 0
 	v.Title = fmt.Sprintf("%v %v/%v", LexViewName, len(l.State.Words), l.Dict.Lexicon.Len())
 
 	if len(l.State.Words) > 0 {
@@ -185,18 +184,7 @@ func (l *LexiconView) updateWord(g *gocui.Gui, v *gocui.View, updown int) error 
 		return err
 	}
 
-	g.Update(func(g *gocui.Gui) error {
-		for _, viewName := range l.ViewsToUpdate {
-			if v, err := g.View(viewName); err != nil {
-				return err
-			} else {
-				if err := l.Views[viewName].Update(v); err != nil {
-					return err
-				}
-			}
-		}
-		return nil
-	})
+	l.UpdateViews(g)
 
 	return nil
 }

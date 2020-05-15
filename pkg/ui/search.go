@@ -61,21 +61,9 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	}
 
 	s.State.Words = newWords
+
 	v.Clear()
-	g.Update(func(g *gocui.Gui) error {
-
-		for _, viewName := range s.ViewsToUpdate {
-			if v, err := g.View(viewName); err != nil {
-				return err
-			} else {
-				if err := s.Views[viewName].Update(v); err != nil {
-					return err
-				}
-			}
-		}
-
-		return nil
-	})
+	s.UpdateViews(g)
 
 	return ToView(g, LexViewName)
 }
