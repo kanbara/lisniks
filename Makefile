@@ -18,7 +18,12 @@ $(BUILD_DIR)/%: %/*.go $(PKGFILES) $(DEPENDENCIES)
 	env GOOS=$(GOOS) $(GO) build -ldflags="-s -w -X main.Version=$(VERSION) -X main.BuildTime=$(BUILD_TIME)" -o $@ ./$(notdir $@)
 
 .PHONY: build
-build: $(BINARY)
+build: checkpcre $(BINARY)
+
+.PHONY: checkpcre
+checkpcre:
+	@pkg-config libpcrecpp || \
+	(echo "no pcre cpp bindings found; please 'brew install pcre'"; exit 1)
 
 .PHONY: lint
 lint: bin/golangci-lint

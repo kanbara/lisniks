@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [1.2.0] - 2020-05-15
+### Added
+Support PCRE instead of RE2 regexp
+
 ## [1.1.1] - 2020-05-13
 ### Added
 Support for debug logging
@@ -25,6 +29,7 @@ Reworked view instantiation, code is much cleaner!
 ### Added
 Search functionality with vim-syntax
 
-[1.1.0]: https://github.com/kanbara/lisniks/compare/v1.1.0...v1.1.1
+[1.2.0]: https://github.com/kanbara/lisniks/compare/v1.1.1...v1.2.0
+[1.1.1]: https://github.com/kanbara/lisniks/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/kanbara/lisniks/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/kanbara/lisniks/releases/tag/v1.0.0
