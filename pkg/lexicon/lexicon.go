@@ -6,8 +6,10 @@ import (
 	"github.com/kanbara/lisniks/pkg/search"
 	s "github.com/kanbara/lisniks/pkg/strings"
 	"github.com/kanbara/lisniks/pkg/word"
-	"regexp"
 	"strings"
+
+    "github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
+
 )
 
 type Lexicon []word.Word
@@ -42,24 +44,20 @@ func (se *Service) At(index int) *word.Word {
 func (se *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool, error) {
 	switch pattern {
 	case search.PatternRegex:
-		matched, err := regexp.Match(str, []byte(w.String()))
-		if err != nil {
-			return false, err
-		}
+		re := pcre.MustCompile(str, pcre.MULTILINE | pcre.UTF8)
+		matcher := re.Matcher([]byte(w.String()),0)
 
-		return matched, nil
+		return matcher.Matches(), nil
 	case search.PatternPhonotactic:
 		// first substitute our C and V for the regex classes
 		str = strings.ReplaceAll(str, "V", search.RegexV)
 		str = strings.ReplaceAll(str, "C", search.RegexC)
 		str := "^" + str + "$"
 
-		matched, err := regexp.Match(str, []byte(w.String()))
-		if err != nil {
-			return false, err
-		}
+		re := pcre.MustCompile(str, pcre.MULTILINE | pcre.UTF8)
+		matcher := re.Matcher([]byte(w.String()),0)
 
-		return matched, nil
+		return matcher.Matches(), nil
 	}
 
 	return false, nil
