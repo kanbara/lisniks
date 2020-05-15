@@ -16,10 +16,7 @@ type View struct {
 }
 
 func (vw *View) UpdateViews(g *gocui.Gui) {
-	vw.State.SelectedWord = 0
-
 	g.Update(func(g *gocui.Gui) error {
-
 		for _, viewName := range vw.ViewsToUpdate {
 			if v, err := g.View(viewName); err != nil {
 				return err
