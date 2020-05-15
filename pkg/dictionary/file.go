@@ -1,12 +1,12 @@
 package dictionary
 
 import (
-	"github.com/kanbara/lisniks/pkg/declension"
-	"github.com/kanbara/lisniks/pkg/language"
-	"github.com/kanbara/lisniks/pkg/lexicon"
-	"github.com/kanbara/lisniks/pkg/partsofspeech"
+	"github.com/kanbara/lisniks/pkg/polyglot/declension"
+	"github.com/kanbara/lisniks/pkg/polyglot/language"
+	"github.com/kanbara/lisniks/pkg/polyglot/lexicon"
+	"github.com/kanbara/lisniks/pkg/polyglot/partsofspeech"
+	"github.com/kanbara/lisniks/pkg/polyglot/wordgrammar"
 	"github.com/kanbara/lisniks/pkg/strings"
-	"github.com/kanbara/lisniks/pkg/wordgrammar"
 	"time"
 )
 

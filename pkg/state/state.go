@@ -2,9 +2,9 @@ package state
 
 import (
 	"github.com/kanbara/lisniks/pkg/dictionary"
-	"github.com/kanbara/lisniks/pkg/lexicon"
+	"github.com/kanbara/lisniks/pkg/polyglot/lexicon"
+	"github.com/kanbara/lisniks/pkg/polyglot/word"
 	"github.com/kanbara/lisniks/pkg/search"
-	"github.com/kanbara/lisniks/pkg/word"
 )
 
 type State struct {

@@ -2,7 +2,7 @@ package wordgrammar
 
 import (
 	"encoding/xml"
-	"github.com/kanbara/lisniks/pkg/word"
+	"github.com/kanbara/lisniks/pkg/polyglot/word"
 	"strconv"
 	gostrings "strings"
 )

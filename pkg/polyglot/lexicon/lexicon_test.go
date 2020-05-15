@@ -1,7 +1,7 @@
 package lexicon
 
 import (
-	"github.com/kanbara/lisniks/pkg/language"
+	"github.com/kanbara/lisniks/pkg/polyglot/language"
 	"github.com/kanbara/lisniks/pkg/search"
 	"reflect"
 	"testing"

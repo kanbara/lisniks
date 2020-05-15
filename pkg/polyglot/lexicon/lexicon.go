@@ -2,14 +2,13 @@ package lexicon
 
 import (
 	"fmt"
-	"github.com/kanbara/lisniks/pkg/language"
+	"github.com/kanbara/lisniks/pkg/polyglot/language"
+	"github.com/kanbara/lisniks/pkg/polyglot/word"
 	"github.com/kanbara/lisniks/pkg/search"
 	s "github.com/kanbara/lisniks/pkg/strings"
-	"github.com/kanbara/lisniks/pkg/word"
 	"strings"
 
-    "github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
-
+	"github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
 )
 
 type Lexicon []word.Word

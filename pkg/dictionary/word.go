@@ -2,7 +2,7 @@ package dictionary
 
 import (
 	"fmt"
-	"github.com/kanbara/lisniks/pkg/word"
+	"github.com/kanbara/lisniks/pkg/polyglot/word"
 )
 
 func (d *Dictionary) PrettyWordStringByID(id int64) string {
@@ -16,7 +16,7 @@ func (d *Dictionary) PrettyWordStringByLoc(loc int) string {
 }
 
 type HumanClass struct {
-	Name string
+	Name  string
 	Class word.Class
 }
 

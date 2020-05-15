@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
-	"github.com/kanbara/lisniks/pkg/lexicon"
+	"github.com/kanbara/lisniks/pkg/polyglot/lexicon"
 	"github.com/kanbara/lisniks/pkg/search"
 )
 

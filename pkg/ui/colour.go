@@ -2,7 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"github.com/kanbara/lisniks/pkg/word"
+	"github.com/kanbara/lisniks/pkg/polyglot/word"
 	"regexp"
 )
 
