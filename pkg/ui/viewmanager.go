@@ -38,12 +38,17 @@ func NewViewManager(dict *dictionary.Dictionary, state *state.State, log *logrus
 				CurrentWordViewName, LocalWordViewName,
 				WordGrammarViewName, DefnViewName, StatusViewName}}},
 
-		LexViewName: &LexiconView{View: View{
-			ViewManager: &vm,
-			ViewsToUpdate: []string{
-				POSViewName, CurrentWordViewName,
-				LocalWordViewName, WordGrammarViewName,
-				DefnViewName, StatusViewName}}},
+		LexViewName: &LexiconView{ListView{
+			View: View{
+				ViewManager: &vm,
+				ViewsToUpdate: []string{
+					POSViewName, CurrentWordViewName,
+					LocalWordViewName, WordGrammarViewName,
+					DefnViewName, StatusViewName}},
+			viewName:     LexViewName,
+			itemLen:      func() int { return len(vm.State.Words) },
+			itemSelected: func() *int { return &vm.State.SelectedWord },
+		}},
 
 		CurrentWordViewName: &CurrentWordView{dv},
 		LocalWordViewName:   &LocalWordView{dv},

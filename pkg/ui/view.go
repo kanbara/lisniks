@@ -31,10 +31,6 @@ func (vw *View) UpdateViews(g *gocui.Gui) {
 	})
 }
 
-type ListView struct {
-	View
-}
-
 type DefaultView struct {
 	*ViewManager
 }
