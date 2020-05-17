@@ -12,11 +12,11 @@ type DefinitionView struct {
 
 const spaceWidth = 1
 
-func (d *DefinitionView) New(g *gocui.Gui, name string) error {
+func (d *DefinitionView) New(name string) error {
 
-	maxX, maxY := g.Size()
+	maxX, maxY := d.g.Size()
 
-	if v, err := g.SetView(name, 21, 10, maxX-1, maxY-6, 0); err != nil {
+	if v, err := d.g.SetView(name, 21, 10, maxX-1, maxY-6, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

@@ -27,18 +27,17 @@ type ModalView struct {
 	frameTitleColour gocui.Attribute
 }
 
-func AddModalView(g *gocui.Gui,
-	v *ViewManager,
+func AddModalView(v *ViewManager,
 	text string,
 	action func(g *gocui.Gui, v *gocui.View) error,
 	mt modalType) { // TODO add keybinding here to blacklist and whitelist after
-	g.Update(func(g *gocui.Gui) error {
+	v.g.Update(func(g *gocui.Gui) error {
 		mv := ModalView{DefaultView: DefaultView{v},
 			text:   text,
 			action: action,
 			mt:     mt}
 
-		if err := mv.New(g, modalName(mt)); err != nil {
+		if err := mv.New(modalName(mt)); err != nil {
 			return err
 		}
 
@@ -59,9 +58,9 @@ func AddModalView(g *gocui.Gui,
 	})
 }
 
-func (m *ModalView) New(g *gocui.Gui, name string) error {
-	x, y := g.Size()
-	if v, err := g.SetView(name,
+func (m *ModalView) New(name string) error {
+	x, y := m.g.Size()
+	if v, err := m.g.SetView(name,
 		x/2-20, y/2-5,
 		x/2+20, y/2+5, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
@@ -70,11 +69,11 @@ func (m *ModalView) New(g *gocui.Gui, name string) error {
 
 		v.Frame = true
 
-		m.frameColour = g.SelFrameColor
-		m.frameTitleColour = g.SelFgColor
+		m.frameColour = m.g.SelFrameColor
+		m.frameTitleColour = m.g.SelFgColor
 
-		g.SelFrameColor = gocui.ColorBlue
-		g.SelFgColor = gocui.ColorBlue
+		m.g.SelFrameColor = gocui.ColorBlue
+		m.g.SelFgColor = gocui.ColorBlue
 
 		// proper sizes, ugly but works
 		x, y := v.Size()
@@ -101,7 +100,7 @@ func (m *ModalView) New(g *gocui.Gui, name string) error {
 			return err
 		}
 
-		if err := m.SetKeybindings(g); err != nil {
+		if err := m.SetKeybindings(); err != nil {
 			return err
 		}
 	}
@@ -130,10 +129,10 @@ func (m *ModalView) cleanup(g *gocui.Gui) error {
 	return nil
 }
 
-func (m *ModalView) SetKeybindings(g *gocui.Gui) error {
+func (m *ModalView) SetKeybindings() error {
 
 	//success func
-	if err := g.SetKeybinding(modalName(m.mt),
+	if err := m.g.SetKeybinding(modalName(m.mt),
 		gocui.KeyEnter,
 		gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 			// execute the action for the keybinding and then cleanup
@@ -147,7 +146,7 @@ func (m *ModalView) SetKeybindings(g *gocui.Gui) error {
 	}
 
 	// cancel func
-	if err := g.SetKeybinding(modalName(m.mt),
+	if err := m.g.SetKeybinding(modalName(m.mt),
 		gocui.KeyEsc,
 		gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 			// basically do nothing here

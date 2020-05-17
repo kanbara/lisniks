@@ -5,9 +5,9 @@ import (
 )
 
 type ViewUpdateSetter interface {
-	New(g *gocui.Gui, name string) error
+	New(name string) error
 	Update(v *gocui.View) error
-	SetKeybindings(g *gocui.Gui) error
+	SetKeybindings() error
 }
 
 type View struct {
@@ -15,8 +15,8 @@ type View struct {
 	ViewsToUpdate []string
 }
 
-func (vw *View) UpdateViews(g *gocui.Gui) {
-	g.Update(func(g *gocui.Gui) error {
+func (vw *View) UpdateViews() {
+	vw.g.Update(func(g *gocui.Gui) error {
 		for _, viewName := range vw.ViewsToUpdate {
 			if v, err := g.View(viewName); err != nil {
 				return err
@@ -36,4 +36,4 @@ type DefaultView struct {
 }
 
 func (d *DefaultView) Update(_ *gocui.View) error        { return nil }
-func (d *DefaultView) SetKeybindings(_ *gocui.Gui) error { return nil }
+func (d *DefaultView) SetKeybindings() error { return nil }

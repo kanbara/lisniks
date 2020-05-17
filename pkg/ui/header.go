@@ -9,17 +9,17 @@ type HeaderView struct {
 	DefaultView
 }
 
-func (h *HeaderView) New(g *gocui.Gui, name string) error {
+func (h *HeaderView) New(name string) error {
 	stringlen := len(h.Dict.Stats())
 
 	// TODO move positions where possible into views.go maybe
-	if v, err := g.SetView(name, 0, 0, stringlen+1, 5, 0); err != nil {
+	if v, err := h.g.SetView(name, 0, 0, stringlen+1, 5, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
 		v.Frame = false
-		if _, err := g.SetViewOnBottom(name); err != nil {
+		if _, err := h.g.SetViewOnBottom(name); err != nil {
 			return err
 		}
 

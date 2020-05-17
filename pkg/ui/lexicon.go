@@ -9,14 +9,14 @@ type LexiconView struct {
 	ListView
 }
 
-func (l *LexiconView) New(g *gocui.Gui, name string) error {
-	_, maxY := g.Size()
-	if v, err := g.SetView(name, 0, 6, 20, maxY-6, 0); err != nil {
+func (l *LexiconView) New(name string) error {
+	_, maxY := l.g.Size()
+	if v, err := l.g.SetView(name, 0, 6, 20, maxY-6, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
-		_, err = g.SetCurrentView(name)
+		_, err = l.g.SetCurrentView(name)
 		if err != nil {
 		}
 

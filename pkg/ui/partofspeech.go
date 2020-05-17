@@ -9,11 +9,11 @@ type PartOfSpeechView struct {
 	DefaultView
 }
 
-func (p *PartOfSpeechView) New(g *gocui.Gui, name string) error {
+func (p *PartOfSpeechView) New(name string) error {
 
-	maxX, _ := g.Size()
+	maxX, _ := p.g.Size()
 
-	if v, err := g.SetView(name, 21, 7, maxX-1, 9, 0); err != nil {
+	if v, err := p.g.SetView(name, 21, 7, maxX-1, 9, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

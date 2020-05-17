@@ -10,7 +10,7 @@ type ListView struct {
 	itemSelected func() *int
 }
 
-func (l *ListView) updatePosition(g *gocui.Gui, v *gocui.View, updown int) error {
+func (l *ListView) updatePosition(v *gocui.View, updown int) error {
 	if l.itemLen() == 0 {
 		return nil
 	}
@@ -74,7 +74,7 @@ func (l *ListView) updatePosition(g *gocui.Gui, v *gocui.View, updown int) error
 	// dereference to set sel to that value!
 	*(l.itemSelected()) = sel
 
-	l.UpdateViews(g)
+	l.UpdateViews()
 
 	return nil
 }
@@ -154,7 +154,7 @@ func (l *ListView) calculateNewViewAndState(c coords, updown int,
 }
 
 func (l *ListView) nextItem(g *gocui.Gui, v *gocui.View) error {
-	err := l.updatePosition(g, v, 1)
+	err := l.updatePosition(v, 1)
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (l *ListView) nextItem(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (l *ListView) jump(g *gocui.Gui, v *gocui.View, ahead bool) error {
+func (l *ListView) jump(v *gocui.View, ahead bool) error {
 	var jump int
 	_, vy := v.Size()
 	// if there's not so many words, make a smaller jump
@@ -178,7 +178,7 @@ func (l *ListView) jump(g *gocui.Gui, v *gocui.View, ahead bool) error {
 		jump = -jump
 	}
 
-	err := l.updatePosition(g, v, jump)
+	err := l.updatePosition(v, jump)
 	if err != nil {
 		return err
 	}
@@ -186,8 +186,8 @@ func (l *ListView) jump(g *gocui.Gui, v *gocui.View, ahead bool) error {
 	return nil
 }
 
-func (l *ListView) nextItemJump(g *gocui.Gui, v *gocui.View) error {
-	err := l.jump(g, v, true)
+func (l *ListView) nextItemJump(_ *gocui.Gui, v *gocui.View) error {
+	err := l.jump(v, true)
 	if err != nil {
 		return err
 	}
@@ -195,8 +195,8 @@ func (l *ListView) nextItemJump(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (l *ListView) prevItem(g *gocui.Gui, v *gocui.View) error {
-	err := l.updatePosition(g, v, -1)
+func (l *ListView) prevItem(_ *gocui.Gui, v *gocui.View) error {
+	err := l.updatePosition(v, -1)
 	if err != nil {
 		return err
 	}
@@ -204,8 +204,8 @@ func (l *ListView) prevItem(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (l *ListView) prevItemJump(g *gocui.Gui, v *gocui.View) error {
-	err := l.jump(g, v, false)
+func (l *ListView) prevItemJump(_ *gocui.Gui, v *gocui.View) error {
+	err := l.jump(v, false)
 	if err != nil {
 		return err
 	}
@@ -213,29 +213,29 @@ func (l *ListView) prevItemJump(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (l *ListView) SetKeybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding(l.viewName, gocui.KeyArrowDown, gocui.ModNone, l.nextItem); err != nil {
+func (l *ListView) SetKeybindings() error {
+	if err := l.g.SetKeybinding(l.viewName, gocui.KeyArrowDown, gocui.ModNone, l.nextItem); err != nil {
 		return err
 	}
 
 	// TODO make these configurable or at least a colemak option ;)
-	if err := g.SetKeybinding(l.viewName, 'j', gocui.ModNone, l.nextItem); err != nil {
+	if err := l.g.SetKeybinding(l.viewName, 'j', gocui.ModNone, l.nextItem); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(l.viewName, gocui.KeyArrowUp, gocui.ModNone, l.prevItem); err != nil {
+	if err := l.g.SetKeybinding(l.viewName, gocui.KeyArrowUp, gocui.ModNone, l.prevItem); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(l.viewName, 'k', gocui.ModNone, l.prevItem); err != nil {
+	if err := l.g.SetKeybinding(l.viewName, 'k', gocui.ModNone, l.prevItem); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(l.viewName, gocui.KeyCtrlF, gocui.ModNone, l.nextItemJump); err != nil {
+	if err := l.g.SetKeybinding(l.viewName, gocui.KeyCtrlF, gocui.ModNone, l.nextItemJump); err != nil {
 		return err
 	}
 
-	if err := g.SetKeybinding(l.viewName, gocui.KeyCtrlB, gocui.ModNone, l.prevItemJump); err != nil {
+	if err := l.g.SetKeybinding(l.viewName, gocui.KeyCtrlB, gocui.ModNone, l.prevItemJump); err != nil {
 		return err
 	}
 

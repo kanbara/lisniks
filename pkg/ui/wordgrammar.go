@@ -9,18 +9,18 @@ type WordGrammarView struct {
 	DefaultView
 }
 
-func (w *WordGrammarView) New(g *gocui.Gui, name string) error {
+func (w *WordGrammarView) New(name string) error {
 
-	maxX, _ := g.Size()
+	maxX, _ := w.g.Size()
 
-	if v, err := g.SetView(name, 21, 6, maxX-1, 9, 0); err != nil {
+	if v, err := w.g.SetView(name, 21, 6, maxX-1, 9, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}
 
 		v.Frame = true
 
-		if _, err := g.SetViewOnBottom(name); err != nil {
+		if _, err := w.g.SetViewOnBottom(name); err != nil {
 			return err
 		}
 

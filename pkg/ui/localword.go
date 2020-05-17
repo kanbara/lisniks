@@ -9,11 +9,11 @@ type LocalWordView struct {
 	DefaultView
 }
 
-func (l *LocalWordView) New(g *gocui.Gui, name string) error {
+func (l *LocalWordView) New(name string) error {
 
-	maxX, _ := g.Size()
+	maxX, _ := l.g.Size()
 
-	if v, err := g.SetView(name, 21, 3, maxX-1, 5, 0); err != nil {
+	if v, err := l.g.SetView(name, 21, 3, maxX-1, 5, 0); err != nil {
 		if !gocui.IsUnknownView(err) {
 			return err
 		}

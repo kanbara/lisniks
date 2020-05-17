@@ -11,14 +11,17 @@ import (
 
 type ViewManager struct {
 	g     *gocui.Gui
+	active []string
+	currentView int
+
 	Log   *logrus.Logger
 	State *state.State
 	Dict  *dictionary.Dictionary
 	Views map[string]ViewUpdateSetter
 }
 
-func NewViewManager(dict *dictionary.Dictionary, state *state.State, log *logrus.Logger) ViewManager {
-	vm := ViewManager{
+func NewViewManager(dict *dictionary.Dictionary, state *state.State, log *logrus.Logger) *ViewManager {
+	vm := &ViewManager{
 		Log:   log,
 		State: state,
 		Dict:  dict,
@@ -26,13 +29,13 @@ func NewViewManager(dict *dictionary.Dictionary, state *state.State, log *logrus
 
 	// we can share this as a singleton as these functions are all nil
 	// and all the updates are thread safe anyway
-	dv := DefaultView{&vm}
+	dv := DefaultView{vm}
 
 	vm.Views = map[string]ViewUpdateSetter{
 		HeaderViewName: &HeaderView{dv},
 
 		SearchViewName: &SearchView{View: View{
-			ViewManager: &vm,
+			ViewManager: vm,
 			ViewsToUpdate: []string{
 				POSViewName, LexViewName,
 				CurrentWordViewName, LocalWordViewName,
@@ -40,7 +43,7 @@ func NewViewManager(dict *dictionary.Dictionary, state *state.State, log *logrus
 
 		LexViewName: &LexiconView{ListView{
 			View: View{
-				ViewManager: &vm,
+				ViewManager: vm,
 				ViewsToUpdate: []string{
 					POSViewName, CurrentWordViewName,
 					LocalWordViewName, WordGrammarViewName,
@@ -76,16 +79,16 @@ func (vm *ViewManager) Run() error {
 	vm.g.SelFrameColor = gocui.ColorGreen
 
 	for name, v := range vm.Views {
-		if err := v.New(g, name); err != nil {
-			vm.Log.Panicf("could instantiate views: %v", err)
+		if err := v.New(name); err != nil {
+			vm.Log.Panicf("could instantiate view %v: %v", name, err)
 		}
 
-		if err := v.SetKeybindings(g); err != nil {
+		if err := v.SetKeybindings(); err != nil {
 			vm.Log.Panicf("could not set keybindings: %v", err)
 		}
 	}
 
-	err = vm.SetGlobalKeybindings(vm.g)
+	err = vm.SetGlobalKeybindings()
 	if err != nil {
 		vm.Log.Panicf("could not set keybinding: %v", err)
 	}
@@ -112,30 +115,75 @@ func (vm *ViewManager) Layout(g *gocui.Gui) error {
 	return nil
 }
 
-func (vm *ViewManager) SetGlobalKeybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding("",
-		gocui.KeyCtrlC,
-		gocui.ModNone,
-		vm.QuitModal); err != nil {
-		return err
-	}
+func (vm *ViewManager) SetActive(s ...string) {
+	vm.active = s
+}
 
-	if err := g.SetKeybinding("",
-		gocui.KeyCtrlR,
-		gocui.ModNone,
-		vm.ReloadModal); err != nil {
-		return err
-	}
+func (vm *ViewManager) Cycle(updown int) error {
+	// haha mod sucks https://github.com/golang/go/issues/448
+	// ((m % n) + n) % n
+	vm.currentView = ((vm.currentView + updown) + len(vm.active)) % len(vm.active)
+	nextView := vm.active[vm.currentView]
 
-	if err := g.SetKeybinding("", '/', gocui.ModNone, ToSearchView); err != nil {
+	if _, err := vm.g.SetCurrentView(nextView); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (vm *ViewManager) UpdateStatusView(g *gocui.Gui) error {
-	g.Update(func(g *gocui.Gui) error {
+func (vm *ViewManager) NextView(g *gocui.Gui, _ *gocui.View) error {
+	if err := vm.Cycle(1); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (vm *ViewManager) PrevView(g *gocui.Gui, _ *gocui.View) error {
+	if err := vm.Cycle(-1); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (vm *ViewManager) SetGlobalKeybindings() error {
+	if err := vm.g.SetKeybinding("",
+		gocui.KeyCtrlC,
+		gocui.ModNone,
+		vm.QuitModal); err != nil {
+		return err
+	}
+
+	if err := vm.g.SetKeybinding("",
+		gocui.KeyCtrlR,
+		gocui.ModNone,
+		vm.ReloadModal); err != nil {
+		return err
+	}
+
+	if err := vm.g.SetKeybinding("", '/', gocui.ModNone, vm.ToSearchView); err != nil {
+		return err
+	}
+
+	if err := vm.g.SetKeybinding("", ']', gocui.ModNone, vm.NextView); err != nil {
+		return err
+	}
+
+	if err := vm.g.SetKeybinding("", gocui.KeyTab, gocui.ModNone, vm.NextView); err != nil {
+		return err
+	}
+
+	if err := vm.g.SetKeybinding("", '[', gocui.ModNone, vm.PrevView); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (vm *ViewManager) UpdateStatusView() error {
+	vm.g.Update(func(g *gocui.Gui) error {
 		if v, err := g.View(StatusViewName); err != nil {
 			return err
 		} else {
