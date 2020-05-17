@@ -20,6 +20,10 @@ type Part struct {
 type Map map[int64]string
 type ReverseMap map[string]int64
 
+func (s *Service) GetNameToIDs() ReverseMap {
+	return s.reversePosMap
+}
+
 func (s *Service) GetByID(id int64) string {
 	return s.posMap[id]
 }

@@ -34,8 +34,14 @@ type MapKey struct {
 }
 
 type MapValue struct {
-	ClassName string
+	// TODO make all int64s to ints, i think
+	ValueID   int64
 	ValueName string
+}
+
+type AllByType struct {
+	ClassID *int64
+	Values []MapValue
 }
 
 // Map holds all the WordClasses for O(1) lookup
@@ -58,6 +64,21 @@ func (s *Service) Get(applyType int64, class word.Class) *MapValue {
 	return &val
 }
 
+func (s *Service) GetAllByType(applyType int64) AllByType {
+	a := AllByType{}
+	for k, v := range s.wgMap {
+		if k.applyType == applyType {
+			if a.ClassID == nil {
+				a.ClassID = &k.Class.Class
+			}
+
+			a.Values = append(a.Values, v)
+		}
+	}
+
+	return a
+}
+
 func NewWordGrammarService(classes Class) *Service {
 	m := make(Map, len(classes))
 
@@ -67,7 +88,7 @@ func NewWordGrammarService(classes Class) *Service {
 				m[MapKey{
 					Class:     word.Class{Class: c.ID, Value: v.ID},
 					applyType: a,
-				}] = MapValue{c.Name, v.Name}
+				}] = MapValue{v.ID, v.Name}
 			}
 		}
 	}

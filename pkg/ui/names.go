@@ -11,4 +11,6 @@ const (
 	SearchViewName      = "search"
 	StatusViewName      = "status"
 	DebugViewName       = "debug"
+	POSSelectViewName   = "select POS"
+	WCGSelectViewName   = "select class"
 )

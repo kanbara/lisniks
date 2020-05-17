@@ -24,11 +24,16 @@ type SearchState struct {
 	SearchQueue    search.Queue
 	CurrentSearch  string
 	QueuePos       int
+
+	SelectedWGC int
+	SelectedPOS int
+	POSes       []int
+	WGCs        []int
 }
 
 func NewState(version string, dict *dictionary.Dictionary) *State {
 	return &State{
-		Version: version,
+		Version:      version,
 		Words:        dict.Lexicon.Words(),
 		SelectedWord: 0,
 		SearchState: &SearchState{
@@ -44,7 +49,7 @@ func NewState(version string, dict *dictionary.Dictionary) *State {
 				search.TypeWordDefinition: search.TypeNames()[search.TypeWordDefinition],
 			},
 			SearchQueue: search.NewQueue(50),
-			QueuePos: -1,
+			QueuePos:    -1,
 		},
 	}
 }
