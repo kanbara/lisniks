@@ -20,9 +20,9 @@ func (w *WordGrammarSelectView) New(name string) error {
 		v.Title = w.viewName
 		v.Frame = true
 		v.FgColor = gocui.ColorRed
+		v.Highlight = true
 
-		err := w.Update(v)
-		if err != nil {
+		if err := w.Update(v); err != nil {
 			return err
 		}
 	}

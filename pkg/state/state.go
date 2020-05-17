@@ -50,6 +50,8 @@ func NewState(version string, dict *dictionary.Dictionary) *State {
 			},
 			SearchQueue: search.NewQueue(50),
 			QueuePos:    -1,
+			SelectedWGC: -1,
+			SelectedPOS: 0,
 		},
 	}
 }

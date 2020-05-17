@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"github.com/awesome-gocui/gocui"
+	"sort"
 )
 
 type POSSelectView struct {
@@ -19,9 +20,9 @@ func (p *POSSelectView) New(name string) error {
 		v.Title = name
 		v.Frame = true
 		v.FgColor = gocui.ColorRed
+		v.Highlight = true
 
-		err := p.Update(v)
-		if err != nil {
+		if err := p.Update(v); err != nil {
 			return err
 		}
 	}
@@ -32,15 +33,18 @@ func (p *POSSelectView) New(name string) error {
 func (p *POSSelectView) Update(v *gocui.View) error {
 	v.Clear()
 
-	m := p.Dict.PartsOfSpeech.GetNameToIDs()
+	names := p.Dict.PartsOfSpeech.GetNameToIDs()
+	sort.Sort(names)
 
-	for n, t := range m {
-		_, err := fmt.Fprintln(v, POSColour(n, t))
+	for _, n := range names {
+		_, err := fmt.Fprintln(v, POSColour(n.Name, n.ID))
 
 		if err != nil {
 			return err
 		}
 	}
+
+	//p.UpdateViews()
 
 	return nil
 }

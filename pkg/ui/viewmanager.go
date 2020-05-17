@@ -108,7 +108,7 @@ func (vm *ViewManager) Run() error {
 		vx, vy := view.Size()
 		cx, cy := view.Cursor()
 		cur, err := view.Line(cy)
-		p := fmt.Sprintf("%v\nselected: %v\nview: %v\nview origin: %v,%v\n"+
+		p := fmt.Sprintf("\nerr: %v\nselected: %v\nview: %v\nview origin: %v,%v\n"+
 			"view size: %v, %v\nview cursor: %v,%v\nlexicion list: %v\nbuf: `%v`",
 			err, vm.State.SelectedWord, view.Name(), ox, oy, vx, vy, cx, cy, len(vm.State.Words), cur)
 		panic(p)
@@ -130,6 +130,13 @@ func (vm *ViewManager) Cycle(updown int) error {
 	// ((m % n) + n) % n
 	vm.currentView = ((vm.currentView + updown) + len(vm.active)) % len(vm.active)
 	nextView := vm.active[vm.currentView]
+
+	v, err := vm.g.View(nextView)
+	if err != nil {
+		return err
+	}
+
+	vm.g.Cursor = v.Editable
 
 	if _, err := vm.g.SetCurrentView(nextView); err != nil {
 		return err
@@ -206,8 +213,6 @@ func (vm *ViewManager) UpdateStatusView() error {
 
 // make a viewPopped fn on the DefaultViews
 func (vm *ViewManager) ToSearchView(g *gocui.Gui, _ *gocui.View) error {
-	g.Cursor = true
-	// todo fix sel func
 	// todo instead of creating this, just have it set to bottom and bring up to top
 	p := POSSelectView{ListView{
 		View: View{vm, []string{WCGSelectViewName}},
@@ -223,32 +228,52 @@ func (vm *ViewManager) ToSearchView(g *gocui.Gui, _ *gocui.View) error {
 		itemSelected: func() *int {return &vm.State.SearchState.SelectedWGC},
 	}}
 
-	if err := p.New(p.viewName); err != nil {
-		return err
+	views := map[string]ViewUpdateSetter{
+		POSSelectViewName: &p,
+		WCGSelectViewName: &w}
+
+	for name, v := range views {
+
+		// append the view to the view map
+		vm.Views[name] = v
+		if err := v.New(name); err != nil {
+			return err
+		}
+
+		if err := v.SetKeybindings(); err != nil {
+			return err
+		}
 	}
 
-	if err := w.New(w.viewName); err != nil {
-		return err
-	}
 
 	vm.SetActive(SearchViewName, p.viewName, w.viewName)
 
 	return vm.ToView(SearchViewName)
 }
 
+// used when you don't need to pop views off the stack
 func (vm *ViewManager) ToView(viewName string) error {
 	if _, err := vm.g.SetCurrentView(viewName); err != nil {
 		return err
 	}
 
+	v, err := vm.g.View(viewName)
+	if err != nil {
+		return err
+	}
+
+	vm.g.Cursor = v.Editable
+
 	return nil
 }
 
+// used when you want to get out of the views you are in
 func (vm *ViewManager) ToDefaultViews(viewsToClose []string) error {
 	vm.SetActive(getDefaultActiveViews()...)
 	vm.currentView = 0
+	vm.g.Cursor = false
 
-	if _, err := vm.g.SetCurrentView(LexViewName); err != nil {
+	if _, err := vm.g.SetCurrentView(vm.active[vm.currentView]); err != nil {
 		return err
 	}
 

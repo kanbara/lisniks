@@ -31,11 +31,8 @@ func (l *LexiconView) New(name string) error {
 		v.Highlight = true
 		v.FgColor = gocui.ColorWhite
 
-		for _, w := range l.State.Words {
-			_, err := fmt.Fprintln(v, w.Austrian)
-			if err != nil {
-				return err
-			}
+		if err := l.Update(v); err != nil {
+			return err
 		}
 	}
 

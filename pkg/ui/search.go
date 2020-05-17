@@ -77,7 +77,6 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 func (s *SearchView) Update(_ *gocui.View) error { return nil }
 
 func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
-	g.Cursor = false
 	s.State.SearchState.QueuePos = -1
 	s.State.SearchState.CurrentSearch = ""
 
@@ -88,11 +87,6 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 	if err := s.UpdateStatusView(); err != nil {
 		return err
 	}
-
-	if err := v.SetCursor(0, 0); err != nil {
-		return err
-	}
-
 
 	return s.back()
 }
