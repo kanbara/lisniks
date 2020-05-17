@@ -144,3 +144,15 @@ func POSColour(str string, pos int64) string {
 
 	return ApplyColour(colour, str, ANSIUnder)
 }
+
+// fixme just temporary, need to check gofatih/color
+func POSColourInvert(str string, pos int64) string {
+
+	colour, ok := staticPOSMap()[pos]
+	if !ok {
+		// colour was not found, return white
+		return ApplyColour(LightGrey, str, ANSIUnder | ANSIInvert)
+	}
+
+	return ApplyColour(colour, str, ANSIUnder | ANSIInvert)
+}

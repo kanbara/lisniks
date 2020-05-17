@@ -3,6 +3,7 @@ package state
 import (
 	"github.com/kanbara/lisniks/pkg/dictionary"
 	"github.com/kanbara/lisniks/pkg/polyglot/lexicon"
+	"github.com/kanbara/lisniks/pkg/polyglot/partsofspeech"
 	"github.com/kanbara/lisniks/pkg/polyglot/word"
 	"github.com/kanbara/lisniks/pkg/search"
 )
@@ -25,8 +26,9 @@ type SearchState struct {
 	CurrentSearch  string
 	QueuePos       int
 
-	SelectedWGC int
+	//SelectedWGCPos int
 	SelectedPOS int
+	POSList     partsofspeech.NameLookup
 	POSes       []int
 	WGCs        []int
 }
@@ -50,7 +52,8 @@ func NewState(version string, dict *dictionary.Dictionary) *State {
 			},
 			SearchQueue: search.NewQueue(50),
 			QueuePos:    -1,
-			SelectedWGC: -1,
+			POSList: dict.PartsOfSpeech.GetNameToIDs(),
+			//SelectedWGCPos: -1,
 			SelectedPOS: 0,
 		},
 	}

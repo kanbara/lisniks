@@ -44,7 +44,7 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 		newWords = s.Dict.Lexicon.Words()
 		s.State.StatusText = fmt.Sprintf("")
 	} else {
-		newWords, err = s.Dict.Lexicon.FindWords(word)
+		newWords, err = s.Dict.Lexicon.FindWords(word, s.State.SearchState.POSes)
 		if err != nil {
 			s.State.StatusText = fmt.Sprintf("%v", err)
 			if err := s.UpdateStatusView(); err != nil {

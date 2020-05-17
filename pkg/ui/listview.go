@@ -8,6 +8,7 @@ type ListView struct {
 	viewName string
 	itemLen func() int
 	itemSelected func() *int
+	selected func(g *gocui.Gui, v *gocui.View) error
 }
 
 func (l *ListView) updatePosition(v *gocui.View, updown int) error {
@@ -215,6 +216,10 @@ func (l *ListView) prevItemJump(_ *gocui.Gui, v *gocui.View) error {
 }
 
 func (l *ListView) SetKeybindings() error {
+	if err := l.g.SetKeybinding(l.viewName, gocui.KeyEnter, gocui.ModNone, l.selected); err != nil {
+		return err
+	}
+
 	if err := l.g.SetKeybinding(l.viewName, gocui.KeyArrowDown, gocui.ModNone, l.nextItem); err != nil {
 		return err
 	}

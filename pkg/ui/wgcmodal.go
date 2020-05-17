@@ -33,8 +33,13 @@ func (w *WordGrammarSelectView) New(name string) error {
 func (w *WordGrammarSelectView) Update(v *gocui.View) error {
 	v.Clear()
 
-	m := w.Dict.WordGrammar.GetAllByType(int64(w.State.SearchState.SelectedPOS))
+	pos := w.State.SearchState.POSList[w.State.SearchState.SelectedPOS]
+
+	w.Log.Debugf("updated WGS")
+	m := w.Dict.WordGrammar.GetAllByType(pos.ID)
 	w.itemLen = func() int { return len(m.Values) }
+
+	w.Log.Debugf("for POS %v got %v and len %v", pos.ID, m, w.itemLen())
 
 	for _, t := range m.Values {
 		_, err := fmt.Fprintln(v, WordGrammarColour(t.ValueName,

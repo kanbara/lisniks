@@ -2,10 +2,11 @@ package partsofspeech
 
 import (
 	"github.com/kanbara/lisniks/pkg/strings"
+	"sort"
 )
 
 type Service struct {
-	posMap Map
+	posMap     Map
 	nameLookup NameLookup
 }
 
@@ -70,6 +71,7 @@ func NewPartsOfSpeechService(pos PartsOfSpeech) *Service {
 		n = append(n, Part{Name: p.Name, ID: p.ID})
 	}
 
+	sort.Sort(n)
 	s := Service{posMap: m, nameLookup: n}
 	return &s
 }

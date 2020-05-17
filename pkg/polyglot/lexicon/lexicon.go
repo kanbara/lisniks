@@ -68,7 +68,7 @@ func (se *Service) found(str string, w s.Rawstring, pattern search.Pattern) (boo
 // should be another type like `Filtered` which is still just a []*word.Word
 // and then all the searches are func (f *Filtered) ByFoo() *Filtered
 // todo can also return the time or status string here to display to the view
-func (se *Service) FindWords(str string) (Lexicon, error) {
+func (se *Service) FindWords(str string, posList []int) (Lexicon, error) {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
 	// or maybe rank queries with predecessor / successor
@@ -94,7 +94,15 @@ func (se *Service) FindWords(str string) (Lexicon, error) {
 		if match, err := se.found(parsed.String, r, parsed.Pattern); err != nil {
 			return nil, err
 		} else if match {
-			words = append(words, se.lexicon[i])
+			if posList != nil && len(posList) != 0 {
+				for _, pos := range posList {
+					if int(se.lexicon[i].Type) == pos {
+						words = append(words, se.lexicon[i])
+					}
+				}
+			} else { // no filters are set
+				words = append(words, se.lexicon[i])
+			}
 		}
 	}
 

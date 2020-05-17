@@ -212,20 +212,21 @@ func (vm *ViewManager) UpdateStatusView() error {
 }
 
 // make a viewPopped fn on the DefaultViews
-func (vm *ViewManager) ToSearchView(g *gocui.Gui, _ *gocui.View) error {
+func (vm *ViewManager) ToSearchView(_ *gocui.Gui, _ *gocui.View) error {
 	// todo instead of creating this, just have it set to bottom and bring up to top
 	p := POSSelectView{ListView{
 		View: View{vm, []string{WCGSelectViewName}},
 		viewName: POSSelectViewName,
 		itemLen: func() int {return len(vm.Dict.PartsOfSpeech.GetNameToIDs())},
-		itemSelected: func() *int {return &vm.State.SearchState.SelectedPOS},
+		itemSelected: func() *int {return &vm.State.SearchState.SelectedPOS },
+		selected: vm.selectedPOS,
 	}}
 
 	w := WordGrammarSelectView{ListView{
 		View: View{vm, nil},
 		viewName: WCGSelectViewName,
 		itemLen: func() int {return 0}, // this needs to be dynamic
-		itemSelected: func() *int {return &vm.State.SearchState.SelectedWGC},
+		//itemSelected: func() *int {return &vm.State.SearchState.SelectedWGCPos },
 	}}
 
 	views := map[string]ViewUpdateSetter{
