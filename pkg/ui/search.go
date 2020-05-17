@@ -29,6 +29,10 @@ func (s *SearchView) New(name string) error {
 	return nil
 }
 
+func (s *SearchView) back() error {
+	return s.ToDefaultViews([]string{POSSelectViewName, WCGSelectViewName})
+}
+
 func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	g.Cursor = false
 	s.State.SearchState.QueuePos = -1
@@ -48,7 +52,8 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 			}
 
 			// TODO refactor this as a handler for viewPopped
-			return ToView(g, LexViewName)
+			return s.back()
+
 		}
 
 		if err := v.SetCursor(0, 0); err != nil {
@@ -66,7 +71,7 @@ func (s *SearchView) execSearch(g *gocui.Gui, v *gocui.View) error {
 	v.Clear()
 	s.UpdateViews()
 
-	return ToView(g, LexViewName)
+	return s.back()
 }
 
 func (s *SearchView) Update(_ *gocui.View) error { return nil }
@@ -88,7 +93,8 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
-	return ToView(g, LexViewName)
+
+	return s.back()
 }
 
 func (s *SearchView) updateTitle(v *gocui.View, t search.Type, p search.Pattern) {

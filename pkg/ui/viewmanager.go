@@ -61,7 +61,13 @@ func NewViewManager(dict *dictionary.Dictionary, state *state.State, log *logrus
 		StatusViewName:      &StatusView{dv},
 	}
 
+	vm.active = getDefaultActiveViews()
+
 	return vm
+}
+
+func getDefaultActiveViews() []string {
+	return []string{LexViewName, LocalWordViewName, WordGrammarViewName, DefnViewName}
 }
 
 func (vm *ViewManager) Run() error {
@@ -199,16 +205,62 @@ func (vm *ViewManager) UpdateStatusView() error {
 }
 
 // make a viewPopped fn on the DefaultViews
-func ToSearchView(g *gocui.Gui, _ *gocui.View) error {
+func (vm *ViewManager) ToSearchView(g *gocui.Gui, _ *gocui.View) error {
 	g.Cursor = true
-	return ToView(g, SearchViewName)
-}
+	// todo fix sel func
+	// todo instead of creating this, just have it set to bottom and bring up to top
+	p := POSSelectView{ListView{
+		View: View{vm, []string{WCGSelectViewName}},
+		viewName: POSSelectViewName,
+		itemLen: func() int {return len(vm.Dict.PartsOfSpeech.GetNameToIDs())},
+		itemSelected: func() *int {return &vm.State.SearchState.SelectedPOS},
+	}}
 
-func ToView(g *gocui.Gui, view string) error {
-	_, err := g.SetCurrentView(view)
-	if err != nil {
+	w := WordGrammarSelectView{ListView{
+		View: View{vm, nil},
+		viewName: WCGSelectViewName,
+		itemLen: func() int {return 0}, // this needs to be dynamic
+		itemSelected: func() *int {return &vm.State.SearchState.SelectedWGC},
+	}}
+
+	if err := p.New(p.viewName); err != nil {
 		return err
 	}
+
+	if err := w.New(w.viewName); err != nil {
+		return err
+	}
+
+	vm.SetActive(SearchViewName, p.viewName, w.viewName)
+
+	return vm.ToView(SearchViewName)
+}
+
+func (vm *ViewManager) ToView(viewName string) error {
+	if _, err := vm.g.SetCurrentView(viewName); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (vm *ViewManager) ToDefaultViews(viewsToClose []string) error {
+	vm.SetActive(getDefaultActiveViews()...)
+	vm.currentView = 0
+
+	if _, err := vm.g.SetCurrentView(LexViewName); err != nil {
+		return err
+	}
+
+	for _, v := range viewsToClose {
+		if err := vm.g.DeleteView(v); err != nil {
+			if err == gocui.ErrUnknownView {
+				return nil // i guess this is fine to ignore
+			}
+		}
+	}
+
+
 
 	return nil
 }
