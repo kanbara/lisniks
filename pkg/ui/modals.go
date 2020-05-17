@@ -22,8 +22,11 @@ func (vm *ViewManager) ReloadModal(g *gocui.Gui, _ *gocui.View) error {
 		dict := dictionary.NewDictFromFile(vm.Dict.Filename(), vm.Log)
 		s := state.NewState(vm.State.Version, dict)
 
-		vm.Dict = dict
-		vm.State = s
+		// if we write vm.Dict = dict that sets vm.Dict's POINTER to the pointer dict has
+		// but actually we want to set vm.Dict (at the same memory address) to the CONTENTS of dict
+		// which keeps the sync of every view, and doesn't leave memory leaks / dangling pointers
+		*vm.Dict = *dict
+		*vm.State = *s
 
 		// update all Views
 		for name := range vm.Views {

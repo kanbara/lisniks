@@ -218,7 +218,16 @@ func (l *ListView) SetKeybindings(g *gocui.Gui) error {
 		return err
 	}
 
+	// TODO make these configurable or at least a colemak option ;)
+	if err := g.SetKeybinding(l.viewName, 'j', gocui.ModNone, l.nextItem); err != nil {
+		return err
+	}
+
 	if err := g.SetKeybinding(l.viewName, gocui.KeyArrowUp, gocui.ModNone, l.prevItem); err != nil {
+		return err
+	}
+
+	if err := g.SetKeybinding(l.viewName, 'k', gocui.ModNone, l.prevItem); err != nil {
 		return err
 	}
 

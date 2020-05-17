@@ -44,7 +44,7 @@ func (l *LexiconView) New(g *gocui.Gui, name string) error {
 
 func (l *LexiconView) Update(v *gocui.View) error {
 	v.Clear()
-	v.Title = fmt.Sprintf("%v %v/%v", LexViewName, len(l.State.Words), l.Dict.Lexicon.Len())
+	v.Title = fmt.Sprintf("%v %v/%v", LexViewName, l.itemLen(), l.Dict.Lexicon.Len())
 
 	if len(l.State.Words) > 0 {
 		for _, w := range l.State.Words {
