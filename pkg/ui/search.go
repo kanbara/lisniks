@@ -88,6 +88,10 @@ func (s *SearchView) cancelToLexView(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
+	if err := v.SetCursor(0,0); err != nil {
+		return err
+	}
+
 	return s.back()
 }
 
