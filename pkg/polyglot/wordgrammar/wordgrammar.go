@@ -3,6 +3,7 @@ package wordgrammar
 import (
 	"encoding/xml"
 	"github.com/kanbara/lisniks/pkg/polyglot/word"
+	"sort"
 	"strconv"
 	gostrings "strings"
 )
@@ -39,9 +40,17 @@ type MapValue struct {
 	ValueName string
 }
 
-type AllByType struct {
-	ClassID *int64
-	Values []MapValue
+type MapValueList []MapValue
+
+func (mv MapValueList) Len() int {
+	return len(mv)
+}
+func (mv MapValueList) Less(i, j int) bool {
+	return mv[i].ValueName < mv[j].ValueName
+}
+
+func (mv MapValueList) Swap(i, j int) {
+	mv[i], mv[j] = mv[j], mv[i]
 }
 
 // Map holds all the WordClasses for O(1) lookup
@@ -64,19 +73,24 @@ func (s *Service) Get(applyType int64, class word.Class) *MapValue {
 	return &val
 }
 
-func (s *Service) GetAllByType(applyType int64) AllByType {
-	a := AllByType{}
+func (s *Service) GetAllByType(applyType int64) (*int64, MapValueList) {
+
+	var classID *int64
+	var m MapValueList
+
 	for k, v := range s.wgMap {
 		if k.applyType == applyType {
-			if a.ClassID == nil {
-				a.ClassID = &k.Class.Class
+			if classID == nil {
+				classID = &k.Class.Class
 			}
 
-			a.Values = append(a.Values, v)
+			m = append(m, v)
 		}
 	}
 
-	return a
+	sort.Sort(m)
+
+	return classID, m
 }
 
 func NewWordGrammarService(classes Class) *Service {

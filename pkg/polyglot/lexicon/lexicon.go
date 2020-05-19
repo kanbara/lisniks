@@ -43,8 +43,8 @@ func (se *Service) At(index int) *word.Word {
 func (se *Service) found(str string, w s.Rawstring, pattern search.Pattern) (bool, error) {
 	switch pattern {
 	case search.PatternRegex:
-		re := pcre.MustCompile(str, pcre.MULTILINE | pcre.UTF8)
-		matcher := re.Matcher([]byte(w.String()),0)
+		re := pcre.MustCompile(str, pcre.MULTILINE|pcre.UTF8)
+		matcher := re.Matcher([]byte(w.String()), 0)
 
 		return matcher.Matches(), nil
 	case search.PatternPhonotactic:
@@ -53,8 +53,8 @@ func (se *Service) found(str string, w s.Rawstring, pattern search.Pattern) (boo
 		str = strings.ReplaceAll(str, "C", search.RegexC)
 		str := "^" + str + "$"
 
-		re := pcre.MustCompile(str, pcre.MULTILINE | pcre.UTF8)
-		matcher := re.Matcher([]byte(w.String()),0)
+		re := pcre.MustCompile(str, pcre.MULTILINE|pcre.UTF8)
+		matcher := re.Matcher([]byte(w.String()), 0)
 
 		return matcher.Matches(), nil
 	}
@@ -68,7 +68,7 @@ func (se *Service) found(str string, w s.Rawstring, pattern search.Pattern) (boo
 // should be another type like `Filtered` which is still just a []*word.Word
 // and then all the searches are func (f *Filtered) ByFoo() *Filtered
 // todo can also return the time or status string here to display to the view
-func (se *Service) FindWords(str string, posList []int) (Lexicon, error) {
+func (se *Service) FindWords(str string, posList map[int]bool) (Lexicon, error) {
 	// start with simple linear traversal here.
 	// think about using suffix trees or something similar later,
 	// or maybe rank queries with predecessor / successor
@@ -78,6 +78,13 @@ func (se *Service) FindWords(str string, posList []int) (Lexicon, error) {
 	parsed, err := search.ParseString(str)
 	if err != nil {
 		return words, err
+	}
+
+	var anyPOS int
+	for _, v := range posList {
+		if v {
+			anyPOS++
+		}
 	}
 
 	for i := range se.lexicon {
@@ -91,16 +98,23 @@ func (se *Service) FindWords(str string, posList []int) (Lexicon, error) {
 			r = se.lexicon[i].Def
 		}
 
-		if match, err := se.found(parsed.String, r, parsed.Pattern); err != nil {
+		match, err := se.found(parsed.String, r, parsed.Pattern)
+		if err != nil {
 			return nil, err
-		} else if match {
-			if posList != nil && len(posList) != 0 {
-				for _, pos := range posList {
-					if int(se.lexicon[i].Type) == pos {
-						words = append(words, se.lexicon[i])
-					}
-				}
-			} else { // no filters are set
+		}
+
+		// gotta check if anyPOS of the POSes are set
+		// if none are set, we check filter, otherwise we add the word
+
+
+		if match {
+			// we have no filters, add the word
+			if anyPOS == 0 {
+				words = append(words, se.lexicon[i])
+				continue
+			}
+
+			if isSet, ok := posList[int(se.lexicon[i].Type)]; ok && isSet {
 				words = append(words, se.lexicon[i])
 			}
 		}

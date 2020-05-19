@@ -226,7 +226,7 @@ func (vm *ViewManager) ToSearchView(_ *gocui.Gui, _ *gocui.View) error {
 		View: View{vm, nil},
 		viewName: WCGSelectViewName,
 		itemLen: func() int {return 0}, // this needs to be dynamic
-		//itemSelected: func() *int {return &vm.State.SearchState.SelectedWGCPos },
+		itemSelected: func() *int {return &vm.State.SearchState.SelectedWGC },
 	}}
 
 	views := map[string]ViewUpdateSetter{

@@ -47,6 +47,15 @@ func (s *Service) GetNameToIDs() NameLookup {
 	return s.nameLookup
 }
 
+func (s *Service)GetIDMap() map[int]bool {
+	m := map[int]bool{}
+	for _, n := range s.nameLookup {
+		m[int(n.ID)] = false
+	}
+
+	return m
+}
+
 func (s *Service) GetByID(id int64) string {
 	return s.posMap[id]
 }

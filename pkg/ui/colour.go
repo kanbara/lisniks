@@ -123,7 +123,6 @@ func staticPOSMap() map[int64]ansicolour {
 
 // TODO find a better spot / way to do or supply this (e.g. could be a file)
 func WordGrammarColour(str string, wg word.Class) string {
-
 	colour, ok := staticWordClassMap()[wg]
 	if !ok {
 		// colour was not found, return normal

@@ -19,8 +19,10 @@ func (w *WordGrammarSelectView) New(name string) error {
 
 		v.Title = w.viewName
 		v.Frame = true
-		v.FgColor = gocui.ColorRed
 		v.Highlight = true
+
+		// todo we need this rn because we create the view again but don't reset the sel
+		w.State.SearchState.SelectedPOS = 0
 
 		if err := w.Update(v); err != nil {
 			return err
@@ -33,17 +35,22 @@ func (w *WordGrammarSelectView) New(name string) error {
 func (w *WordGrammarSelectView) Update(v *gocui.View) error {
 	v.Clear()
 
+	if w.State.SearchState.SelectedPOS >= len(w.State.SearchState.POSList) {
+		w.Log.Debugf("oops got %v", w.State.SearchState.SelectedPOS)
+	}
+
 	pos := w.State.SearchState.POSList[w.State.SearchState.SelectedPOS]
 
-	w.Log.Debugf("updated WGS")
-	m := w.Dict.WordGrammar.GetAllByType(pos.ID)
-	w.itemLen = func() int { return len(m.Values) }
+	classID, m := w.Dict.WordGrammar.GetAllByType(pos.ID)
+	w.itemLen = func() int { return len(m) }
 
-	w.Log.Debugf("for POS %v got %v and len %v", pos.ID, m, w.itemLen())
+	if w.itemLen() != 0 {
+		w.Log.Debugf("for POS %v got %v and len %v", pos.ID, m, w.itemLen())
+	}
 
-	for _, t := range m.Values {
+	for _, t := range m {
 		_, err := fmt.Fprintln(v, WordGrammarColour(t.ValueName,
-			word.Class{Class: *m.ClassID, Value: t.ValueID}))
+			word.Class{Class: *classID, Value: t.ValueID}))
 
 		if err != nil {
 			return err

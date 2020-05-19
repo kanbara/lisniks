@@ -74,6 +74,7 @@ func (l *ListView) updatePosition(v *gocui.View, updown int) error {
 
 	// this looks weird, but it's just a function which returns a pointer, which we then
 	// dereference to set sel to that value!
+
 	*(l.itemSelected()) = sel
 	l.UpdateViews()
 

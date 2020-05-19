@@ -26,10 +26,10 @@ type SearchState struct {
 	CurrentSearch  string
 	QueuePos       int
 
-	//SelectedWGCPos int
+	SelectedWGC int
 	SelectedPOS int
 	POSList     partsofspeech.NameLookup
-	POSes       []int
+	POSes       map[int]bool
 	WGCs        []int
 }
 
@@ -52,8 +52,9 @@ func NewState(version string, dict *dictionary.Dictionary) *State {
 			},
 			SearchQueue: search.NewQueue(50),
 			QueuePos:    -1,
-			POSList: dict.PartsOfSpeech.GetNameToIDs(),
-			//SelectedWGCPos: -1,
+			POSList:     dict.PartsOfSpeech.GetNameToIDs(),
+			POSes: dict.PartsOfSpeech.GetIDMap(),
+			SelectedWGC: 0,
 			SelectedPOS: 0,
 		},
 	}
